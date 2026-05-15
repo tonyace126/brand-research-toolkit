@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Brand Issue Research Output",
+  "type": "object",
+  "required": ["topic", "time_range", "rows", "summary"],
+  "properties": {
+    "topic": { "type": "string", "description": "研究主題" },
+    "brand": { "type": "string", "description": "品牌名（單一品牌時填）" },
+    "brands": { "type": "array", "items": { "type": "string" }, "description": "多品牌比較時填" },
+    "time_range": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string", "format": "date" },
+        "to": { "type": "string", "format": "date" }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["platform", "title", "url"],
+        "properties": {
+          "platform": { "type": "string", "enum": ["YouTube", "PTT", "Dcard", "Mobile01", "News", "Threads", "FB"] },
+          "title": { "type": "string" },
+          "source": { "type": "string", "description": "頻道 / 版 / 作者 / 媒體" },
+          "date": { "type": "string", "format": "date" },
+          "volume": { "type": "string", "enum": ["高", "中高", "中", "低", "未知"] },
+          "sentiment": { "type": "string", "enum": ["正向", "中性", "負向", "爭議"] },
+          "category": { "type": "string", "description": "主題分類，自由填" },
+          "url": { "type": "string", "format": "uri" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["tldr", "insights"],
+      "properties": {
+        "tldr": { "type": "string", "description": "100 字內" },
+        "insights": { "type": "array", "items": { "type": "string" }, "description": "3-5 條跨平台觀察" }
+      }
+    }
+  }
+}
