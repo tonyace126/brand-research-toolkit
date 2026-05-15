@@ -1,0 +1,21 @@
+/* Sample theme override
+ * Copy this file to your GitHub Pages repo root and rename it
+ * (e.g. my-brand-theme.css), then set "theme_overrides" in
+ * ~/.config/research-publisher.json to its filename.
+ *
+ * The :root variables below override the template defaults.
+ */
+
+:root {
+  /* Sugarfun example (米色暖紅) */
+  --color-bg: #faf7f2;
+  --color-text: #2a2218;
+  --color-accent: #c8553d;
+  --color-card: #f3ede2;
+  --color-border: #e6dfd0;
+  --color-muted: #8a7d6a;
+  --font-sans: "PingFang TC", "Noto Serif TC", -apple-system, sans-serif;
+}
+
+/* Optional: change body background gradient or add subtle texture */
+/* body { background: linear-gradient(...); } */
