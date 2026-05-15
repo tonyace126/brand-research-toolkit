@@ -2,7 +2,7 @@
   "name": "brand-research-toolkit",
   "version": "0.1.0",
   "description": "Lazy package for brand issue research across YouTube, forums, news — outputs to HTML newsletter.",
-  "author": "Tony Wang / Sugarfun",
+  "author": "Tony Wang",
   "license": "MIT",
   "repository": "https://github.com/tonyace126/brand-research-toolkit"
 }

@@ -60,10 +60,10 @@ description: Convert any research result (tables, summaries, sources) into a cle
 2. 對外網址（不含尾斜線）？
    例：https://tonyace126.github.io/my-shares
 3. 作者署名？
-   例：Tony / Sugarfun
+   例：Tony Wang
 4. 要用自訂主題嗎？(y/n，n = 通用範本)
 5. （若上題 y）自訂主題 CSS 檔名（放在 repo 根目錄）？
-   例：sugarfun-theme.css
+   例：my-theme.css
 ```
 
 寫入 `~/.config/research-publisher.json`：

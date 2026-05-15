@@ -109,10 +109,10 @@ skill 觸發後會：
 2. 對外網址（不含尾斜線）？
    例：https://yourname.github.io/my-shares
 3. 作者署名？
-   例：Tony / Sugarfun
+   例：Tony Wang
 4. 要用自訂主題嗎？(y/n，n = 通用範本)
 5. （若 4 選 y）自訂主題 CSS 檔名（放在 repo 根目錄）？
-   例：sugarfun-theme.css
+   例：my-theme.css
 ```
 
 還沒有 GitHub Pages repo 的話，先看 [`./skills/publish-research-html/references/github-pages-setup.md`](./skills/publish-research-html/references/github-pages-setup.md)。
@@ -121,7 +121,7 @@ skill 觸發後會：
 
 HTML 範本用 CSS 變數設計（顏色、字型、圓角、間距全部抽出來），要改成自己品牌的視覺只需要在你的 GitHub Pages repo 放一個 override CSS，不用動 plugin 本體。
 
-完整變數列表 + 5 個示範主題（Sugarfun 暖、極簡黑、雜誌風、暗色、學術藍）：
+完整變數列表 + 5 個示範主題（暖色、極簡黑、雜誌風、暗色、學術藍）：
 
 → [`./skills/publish-research-html/references/customization-guide.md`](./skills/publish-research-html/references/customization-guide.md)
 
@@ -181,7 +181,7 @@ GitHub Pages 部署有 1-2 分鐘延遲，先等等。超過 5 分鐘還 404 就
 - `brand-issue-research` skill：跨 7 平台（YouTube、PTT、Dcard、Mobile01、新聞、Threads、FB）並行 dispatch agent，整合表格 + 觀察小結
 - `publish-research-html` skill：HTML 電子報範本（CSS 變數客製化），5 題 setup 寫入 `~/.config/research-publisher.json`，自動 push 到 GitHub Pages
 - 範例輸出：`examples/2026-05-tw-bank-viral-videos.html`（19 家銀行 YouTube 話題盤點）
-- 5 個示範主題（Sugarfun / 極簡黑 / 雜誌 / 暗色 / 學術藍）
+- 5 個示範主題（暖色 / 極簡黑 / 雜誌 / 暗色 / 學術藍）
 - 完整 platform reference docs（每個平台的工具、語法、已知限制）
 - 嚴格規則：禁止編造 URL、禁止編造數字、找不到就誠實標註
 - 統一輸出 schema：`output-schema.json` 定義表格欄位（平台 / 標題 / 來源 / 日期 / 聲量 / 情緒 / 分類 / URL）
@@ -195,7 +195,7 @@ GitHub Pages 部署有 1-2 分鐘延遲，先等等。超過 5 分鐘還 404 就
 
 ## License
 
-MIT © 2026 Tony Wang / Sugarfun — 詳見 [LICENSE](./LICENSE)。
+MIT © 2026 Tony Wang — 詳見 [LICENSE](./LICENSE)。
 
 可商用、可改、可分發，附上 LICENSE 即可。歡迎 fork 改成自己版本（例：`brand-research-toolkit-jp` 換成日本平台 reference）。
 

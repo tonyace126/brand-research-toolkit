@@ -54,7 +54,7 @@
 
 ## 範例
 
-`assets/theme-vars.css` 是 Sugarfun 風格範例（米色 + 暖紅 + 思源黑體 / 思源宋體）。
+`assets/theme-vars.css` 是 範例主題（米色 + 暖紅 + 思源黑體 / 思源宋體）。
 
 ## 字型建議
 

@@ -66,7 +66,7 @@ brand-research-toolkit/
   "name": "brand-research-toolkit",
   "version": "0.1.0",
   "description": "Lazy package for brand issue research across YouTube, forums, news — outputs to HTML newsletter.",
-  "author": "Sugarfun / Tony Wang",
+  "author": "Tony Wang",
   "license": "MIT",
   "repository": "https://github.com/tonyace126/brand-research-toolkit"
 }
@@ -74,7 +74,7 @@ brand-research-toolkit/
 
 - [ ] **Step 2: Write `LICENSE` (MIT, 2026)**
 
-Standard MIT text with `Copyright (c) 2026 Tony Wang / Sugarfun`. Use the canonical MIT template — do not modify the legal body.
+Standard MIT text with `Copyright (c) 2026 Tony Wang`. Use the canonical MIT template — do not modify the legal body.
 
 - [ ] **Step 3: Write `.gitignore`**
 
@@ -152,7 +152,7 @@ HTML 範本用 CSS 變數設計，要改色/字型只需要在你的 GitHub Page
 
 ## License
 
-MIT © 2026 Tony Wang / Sugarfun
+MIT © 2026 Tony Wang
 ```
 
 - [ ] **Step 2: Commit**
@@ -999,10 +999,10 @@ description: Convert any research result (tables, summaries, sources) into a cle
 2. 對外網址（不含尾斜線）？
    例：https://tonyace126.github.io/my-shares
 3. 作者署名？
-   例：Tony / Sugarfun
+   例：Tony Wang
 4. 要用自訂主題嗎？(y/n，n = 通用範本)
 5. （若上題 y）自訂主題 CSS 檔名（放在 repo 根目錄）？
-   例：sugarfun-theme.css
+   例：my-theme.css
 ```
 
 寫入 `~/.config/research-publisher.json`：
@@ -1252,7 +1252,7 @@ git commit -m "feat(skill): add newsletter HTML template"
  */
 
 :root {
-  /* Sugarfun example (米色暖紅) */
+  /* Custom theme example (米色暖紅) */
   --color-bg: #faf7f2;
   --color-text: #2a2218;
   --color-accent: #c8553d;
@@ -1339,7 +1339,7 @@ git commit -m "feat(skill): add sample theme override CSS"
 
 ## 範例
 
-`assets/theme-vars.css` 是 Sugarfun 風格範例（米色 + 暖紅 + 思源黑體 / 思源宋體）。
+`assets/theme-vars.css` 是 範例主題（米色 + 暖紅 + 思源黑體 / 思源宋體）。
 
 ## 字型建議
 
@@ -1474,7 +1474,7 @@ This file is the **rendered output** of using `publish-research-html` on the ban
 
 Take `assets/newsletter-template.html` and substitute:
 - `{{TITLE}}`: `官股 vs 民營銀行話題影片清單（2026-04-15 ~ 2026-05-15）`
-- `{{AUTHOR}}`: `Tony / Sugarfun`
+- `{{AUTHOR}}`: `Tony Wang`
 - `{{DATE}}`: `2026-05-15`
 - `{{YEAR}}`: `2026`
 - `{{READ_TIME}}`: `5`
