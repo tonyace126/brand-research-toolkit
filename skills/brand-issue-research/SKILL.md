@@ -1,6 +1,6 @@
 ---
 name: brand-issue-research
-description: Research brand issues, controversies, or campaigns across YouTube, PTT, Dcard, Mobile01, news sites, Threads, and FB. Use when user says "research X brand discussion", "find what people say about Y", "track [brand] [topic] across platforms", "盤點 X 品牌話題", "研究 X 在 PTT/YouTube 怎麼被討論", "X 議題輿情", "競品聲量比較", or wants a structured cross-platform brand sentiment / topic landscape. Dispatches parallel agents per platform, returns structured tables + observation summary.
+description: Research brand issues, controversies, or campaigns across YouTube, PTT, Dcard, Mobile01, news sites, Threads, FB, and AI engines (ChatGPT/Perplexity/Gemini). Use when user says "research X brand discussion", "find what people say about Y", "track [brand] [topic] across platforms", "AI 怎麼回答我品牌", "盤點 X 品牌話題", "研究 X 在 PTT/YouTube 怎麼被討論", "X 議題輿情", "競品聲量比較", "AEO 監測", or wants a structured cross-platform brand sentiment / topic landscape. Dispatches parallel agents per platform, returns structured tables + observation summary.
 ---
 
 # Brand Issue Research（品牌議題研究）
@@ -23,6 +23,7 @@ description: Research brand issues, controversies, or campaigns across YouTube, 
 | 新聞媒體 | ✅ 高 | WebSearch + WebFetch | references/platforms/news.md |
 | Threads | ⚠️ 牆 | 改用 Threads App / KEYPO | references/platforms/threads-fb.md |
 | FB | ⚠️ 牆 | 改用第三方社群監聽 | references/platforms/threads-fb.md |
+| AI 引擎 | ⚠️ 部分 | 使用者手動跑 + 貼回（ChatGPT / Perplexity / Gemini） | references/platforms/ai-engines.md |
 
 ## 執行流程（5 步）
 
@@ -38,6 +39,7 @@ description: Research brand issues, controversies, or campaigns across YouTube, 
 - 社群口碑 → PTT + Dcard + Mobile01
 - 新聞事件 → 新聞 + PTT
 - 品牌行銷活動 → YouTube + Threads（誠實標牆）
+- AEO / AI 通路聲量 → AI 引擎（使用者手動跑 + 貼回）
 
 ### 3. 並行 dispatch agents
 每平台一個 agent，使用 `references/prompts/parallel-agents.md` 範本。
