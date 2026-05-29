@@ -20,11 +20,13 @@ mkdir -p "$LA" "$LOG"
 # 1) 祕密設定檔（只在本機、不進 repo）
 if [ ! -f "$ENVFILE" ]; then
   cat > "$ENVFILE" <<EOF
-# 小蜜蜂後端設定（本機私有，請填好 NOTION_TOKEN）
+# 小蜜蜂後端設定（本機私有，請填好 NOTION_TOKEN 與 GIST_TOKEN）
 export AGENT_TEAM_TOKEN="1206"
 export NOTION_TOKEN=""
 export NOTION_PROJECTS_DB="2fbd052d1cca46399314bb68e947c3c6"
 export NOTION_TASKS_DB="bb4adbb2ff95426494a6d709eaed3270"
+# 一勞永逸用：GitHub PAT（勾 gist 權限），讓 Mac 自動發布目前網址到固定 Gist
+export GIST_TOKEN=""
 EOF
   chmod 600 "$ENVFILE"
   echo "📝 已建立 $ENVFILE"
@@ -59,13 +61,13 @@ cat > "$LA/com.xiaomifeng.tunnel.plist" <<EOF
   <key>Label</key><string>com.xiaomifeng.tunnel</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/bash</string><string>-lc</string>
-    <string>exec "$CF" tunnel --url http://localhost:8787</string>
+    <string>/bin/bash</string>
+    <string>$HERE/tunnel-agent.sh</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$LOG/xiaomifeng-tunnel.log</string>
-  <key>StandardErrorPath</key><string>$LOG/xiaomifeng-tunnel.log</string>
+  <key>StandardOutPath</key><string>$LOG/xiaomifeng-tunnel-agent.log</string>
+  <key>StandardErrorPath</key><string>$LOG/xiaomifeng-tunnel-agent.log</string>
 </dict></plist>
 EOF
 
@@ -86,5 +88,9 @@ echo "✅ 背景服務已安裝並啟動（登入時自動跑、掛掉自動重�
 echo ""
 echo "等 5–10 秒後，查目前對外網址："
 echo "  bash $HERE/url-macos.sh"
+echo ""
+echo ""
+echo "若已設 GIST_TOKEN（一勞永逸）：等 20 秒後拿固定登錄網址："
+echo "  bash $HERE/registry-url.sh"
 echo ""
 echo "停用／移除： bash $HERE/uninstall-macos.sh"

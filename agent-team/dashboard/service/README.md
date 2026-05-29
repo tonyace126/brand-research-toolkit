@@ -22,6 +22,24 @@ bash agent-team/dashboard/service/url-macos.sh
 ```
 會印出（並複製到剪貼簿）目前的 `https://xxx.trycloudflare.com`，貼進手機 App 的「⚙︎ 設定終端網址」即可。
 
+## 一勞永逸：固定登錄網址（免買網域）
+
+讓手機 App 永遠不用手動改網址 —— Mac 每次拿到新隧道網址會自動寫進一個固定 Gist，App 從那讀。
+
+1. 建一把 GitHub Token：github.com → Settings → Developer settings →
+   Personal access tokens → **Tokens (classic)** → Generate → 只勾 **gist** → 複製。
+2. 填進設定檔：`open -e ~/.xiaomifeng.env` → 把 `GIST_TOKEN=""` 填上。
+3. 重跑安裝：`bash agent-team/dashboard/service/install-macos.sh`
+4. 等 ~20 秒 → 拿固定登錄網址（會複製到剪貼簿）：
+   ```bash
+   bash agent-team/dashboard/service/registry-url.sh
+   ```
+5. 手機 App →「⚙︎ 設定終端網址」→ 把它貼進**「自動網址登錄 URL」**欄位 → 儲存。
+   之後重開機網址再變，App 都自動跟上，永遠不用再改 🎉
+
+> 安全：登錄網址可被讀到後端網址，所以請把 `AGENT_TEAM_TOKEN` 從 `1206` 換成長一點的隨機字串
+> （改 `~/.xiaomifeng.env` 後重跑 install，並更新 App 的 Token 欄位）。
+
 ## 停用 / 移除
 
 ```bash

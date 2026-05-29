@@ -49,19 +49,25 @@
   <button class="gear" onclick="toggleSettings()">⚙︎ 設定終端網址</button>
 
   <div class="settings" id="settings">
-    <label>後端網址（cloudflared / 區網 IP）</label>
+    <label>自動網址登錄 URL（推薦填這個 → 一勞永逸）</label>
+    <input id="registry" placeholder="https://gist.githubusercontent.com/.../xiaomifeng-backend.json">
+    <label>後端網址（沒填上面才需要手動填）</label>
     <input id="backend" placeholder="https://xxxx.trycloudflare.com">
     <label>存取 Token</label>
-    <input id="token" placeholder="你在 serve.py 設定的 AGENT_TEAM_TOKEN">
+    <input id="token" placeholder="你的 AGENT_TEAM_TOKEN">
     <button onclick="save()">儲存並連線</button>
-    <div class="hint">設定只存在這支手機（localStorage），不會上傳。</div>
+    <div class="hint">填了「自動網址登錄」後，每次重開機網址自動更新、不用再改。設定只存在這支手機。</div>
   </div>
 </div>
 
 <script>
-var LS_B = "at_backend", LS_T = "at_token";
+var LS_B = "at_backend", LS_T = "at_token", LS_R = "at_registry";
 function $(id){ return document.getElementById(id); }
-function getCfg(){ return { b:(localStorage.getItem(LS_B)||"").replace(/\/+$/,""), t:localStorage.getItem(LS_T)||"" }; }
+function getCfg(){ return {
+  b:(localStorage.getItem(LS_B)||"").replace(/\/+$/,""),
+  t:localStorage.getItem(LS_T)||"",
+  r:(localStorage.getItem(LS_R)||"").trim()
+}; }
 function toggleSettings(){ var s=$("settings"); s.style.display = s.style.display==="block"?"none":"block"; }
 function offline(msg){
   $("loading").style.display="none";
@@ -72,14 +78,27 @@ function offline(msg){
 function save(){
   localStorage.setItem(LS_B, $("backend").value.trim());
   localStorage.setItem(LS_T, $("token").value.trim());
+  localStorage.setItem(LS_R, $("registry").value.trim());
   $("settings").style.display="none";
   boot();
+}
+async function resolveBackend(c){
+  // 有「自動網址登錄」就從那裡讀目前後端網址；否則用手動後端網址
+  if(!c.r) return c.b;
+  var ctrl=new AbortController();
+  var to=setTimeout(function(){ ctrl.abort(); }, 6000);
+  var u = c.r + (c.r.indexOf("?")<0?"?":"&") + "t=" + Date.now();
+  var r = await fetch(u, { signal:ctrl.signal, cache:"no-store" });
+  clearTimeout(to);
+  if(!r.ok) throw new Error("registry");
+  var j = await r.json();
+  return (j.url||"").replace(/\/+$/,"");
 }
 async function boot(){
   var c = getCfg();
   $("retry").style.display="none";
   $("banner").style.display="none";
-  if(!c.b){
+  if(!c.r && !c.b){
     $("loading").style.display="none";
     $("settings").style.display="block";
     $("status").textContent="";
@@ -88,21 +107,23 @@ async function boot(){
   $("loading").style.display="block";
   $("status").textContent="檢查連線中…";
   try{
+    var backend = await resolveBackend(c);
+    if(!backend) throw new Error("nobackend");
     var ctrl=new AbortController();
-    var to=setTimeout(function(){ ctrl.abort(); }, 4500);
-    var url = c.b + "/api/health" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
+    var to=setTimeout(function(){ ctrl.abort(); }, 5000);
+    var url = backend + "/api/health" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
     var r = await fetch(url, { signal:ctrl.signal, cache:"no-store" });
     clearTimeout(to);
     if(r.status===401){ offline("Token 不正確，請到設定修正。"); return; }
     if(!r.ok) throw 0;
     $("status").textContent="已連線，載入中…";
-    location.href = c.b + "/" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
+    location.href = backend + "/" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
   }catch(e){
     offline();
   }
 }
 // 預填設定欄位
-(function(){ var c=getCfg(); if($("backend")) $("backend").value=c.b; if($("token")) $("token").value=c.t; })();
+(function(){ var c=getCfg(); if($("backend")) $("backend").value=c.b; if($("token")) $("token").value=c.t; if($("registry")) $("registry").value=c.r; })();
 boot();
 </script>
 </body>
