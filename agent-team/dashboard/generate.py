@@ -32,14 +32,14 @@ STATUS_LABEL = {
     "blocked": "卡關",
 }
 STATUS_COLOR = {
-    "backlog": "#6b7280",
-    "planned": "#46a6c8",
-    "in_progress": "#f5c451",
-    "review": "#b18cf0",
-    "done": "#5fd38a",
-    "blocked": "#ff5638",
+    "backlog": "#9aa0a6",
+    "planned": "#2f6f8f",
+    "in_progress": "#c9921f",
+    "review": "#7a52b3",
+    "done": "#2f8f57",
+    "blocked": "#e0492f",
 }
-ACCENT = "#ff5638"
+ACCENT = "#c2e000"
 
 
 # ----------------------------------------------------------------------------
@@ -182,12 +182,12 @@ def donut(pct, color=ACCENT, size=128, label=None):
     dash = c * pct / 100
     label = label if label is not None else f"{pct}%"
     return f"""<svg viewBox="0 0 {size} {size}" width="{size}" height="{size}" class="donut">
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#262a33" stroke-width="10"/>
+  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#e8e8e3" stroke-width="10"/>
   <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="10"
     stroke-dasharray="{dash:.1f} {c:.1f}" stroke-linecap="butt"
     transform="rotate(-90 {cx} {cy})"/>
   <text x="{cx}" y="{cy}" text-anchor="middle" dominant-baseline="central"
-    font-size="28" font-weight="600" fill="#e7e5e0">{label}</text>
+    font-size="28" font-weight="600" fill="#16181c">{label}</text>
 </svg>"""
 
 
@@ -223,12 +223,12 @@ def daily_chart(daily):
         lbl = dt.strftime("%m/%d")
         bars.append(
             f'<text x="{x + bw/2:.1f}" y="{h - 6:.1f}" text-anchor="middle" '
-            f'font-size="8.5" fill="#5b606b" font-family="Oswald,sans-serif">{lbl}</text>'
+            f'font-size="8.5" fill="#9aa0a6" font-family="Oswald,sans-serif">{lbl}</text>'
         )
     base = pad_t + plot_h
     return (
         f'<svg viewBox="0 0 {w} {h}" class="chart" preserveAspectRatio="xMidYMid meet">'
-        f'<line x1="{pad_l}" y1="{base}" x2="{w-10}" y2="{base}" stroke="#2a2e37"/>'
+        f'<line x1="{pad_l}" y1="{base}" x2="{w-10}" y2="{base}" stroke="#e2e2dd"/>'
         + "".join(bars)
         + "</svg>"
     )
@@ -254,8 +254,8 @@ def gantt(ctx):
     cur = date(start.year, start.month, 1)
     while cur <= target:
         x = x_of(cur)
-        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#1f232b"/>')
-        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#5b606b" font-family="Oswald,sans-serif">{cur.strftime("%Y/%m")}</text>')
+        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#ececec"/>')
+        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#9aa0a6" font-family="Oswald,sans-serif">{cur.strftime("%Y/%m")}</text>')
         cur = date(cur.year + (cur.month // 12), (cur.month % 12) + 1, 1)
 
     # 今日線
@@ -284,7 +284,7 @@ def gantt(ctx):
         label = f'{t["id"]} {t["title"]}'
         if len(label) > 30:
             label = label[:29] + "…"
-        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#c2c5cd">{esc(label)}</text>')
+        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#444">{esc(label)}</text>')
         # 底條 + 進度填充
         parts.append(f'<rect x="{x1:.1f}" y="{y+5:.1f}" width="{bw:.1f}" height="14" rx="4" fill="{col}" opacity="0.28"/>')
         fillw = bw * t["progress"] / 100
@@ -312,8 +312,8 @@ def agent_cards(ctx):
         if ct:
             tk = next((t for t in ctx["tasks"] if t["id"] == ct), None)
             ct_title = f'{ct} {tk["title"]}' if tk else ct
-        sb = {"active": ("●", "#5fd38a", "工作中"), "idle": ("○", "#8b909b", "待命"),
-              "blocked": ("▲", "#ff5638", "卡關")}.get(a["status"], ("○", "#8b909b", a["status"]))
+        sb = {"active": ("●", "#2f8f57", "工作中"), "idle": ("○", "#9aa0a6", "待命"),
+              "blocked": ("▲", "#e0492f", "卡關")}.get(a["status"], ("○", "#9aa0a6", a["status"]))
         out.append(f"""<div class="agent" style="border-top:3px solid {a.get('color', ACCENT)}">
   <div class="agent-top"><span class="agent-emoji">{a.get('emoji','🤖')}</span>
     <div><div class="agent-name">{esc(a['name'])}</div>
@@ -386,9 +386,9 @@ def activity_feed(ctx):
     return "".join(rows)
 
 
-PRIO_PF = {"高": ("🔴", "#ff5638"), "中": ("🟡", "#f5c451"), "低": ("🟢", "#5fd38a")}
-PF_STAGE = {"進行中": "#46a6c8", "未開始": "#6b7280", "完成": "#5fd38a"}
-TYPE_COLOR = {"我方承諾": "#ff5638", "對方承諾": "#46a6c8", "主動追蹤": "#f5c451", "風險警示": "#ff8c42"}
+PRIO_PF = {"高": ("🔴", "#e0492f"), "中": ("🟡", "#c9921f"), "低": ("🟢", "#2f8f57")}
+PF_STAGE = {"進行中": "#2f6f8f", "未開始": "#9aa0a6", "完成": "#2f8f57"}
+TYPE_COLOR = {"我方承諾": "#e0492f", "對方承諾": "#2f6f8f", "主動追蹤": "#c9921f", "風險警示": "#d2691e"}
 
 
 def rem_row(r, today):
@@ -434,8 +434,8 @@ def pf_gantt(projects, today):
     cur = date(start.year, start.month, 1)
     while cur <= end:
         x = x_of(cur)
-        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#1f232b"/>')
-        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#5b606b" font-family="Oswald,sans-serif">{cur.strftime("%m/%d")}</text>')
+        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#ececec"/>')
+        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#9aa0a6" font-family="Oswald,sans-serif">{cur.strftime("%m/%d")}</text>')
         cur = date(cur.year + (cur.month // 12), (cur.month % 12) + 1, 1)
     tx = x_of(today)
     parts.append(f'<line x1="{tx:.1f}" y1="{top-8}" x2="{tx:.1f}" y2="{h-10}" stroke="{ACCENT}" stroke-dasharray="3 3"/>')
@@ -453,14 +453,14 @@ def pf_gantt(projects, today):
         label = f'{p["code"]} {p["name"]}'
         if len(label) > 22:
             label = label[:21] + "…"
-        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#c2c5cd">{esc(label)}</text>')
+        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#444">{esc(label)}</text>')
         parts.append(f'<rect x="{x1:.1f}" y="{y+6:.1f}" width="{bw:.1f}" height="14" rx="4" fill="{col}" opacity="0.28"/>')
         fillw = bw * p.get("completion", 0) / 100
         parts.append(f'<rect x="{x1:.1f}" y="{y+6:.1f}" width="{fillw:.1f}" height="14" rx="4" fill="{col}"><title>{esc(p["name"])}｜完成度 {p.get("completion",0)}%</title></rect>')
         nd = d(p.get("next_due"))
         if nd:
             nx = x_of(nd)
-            mc = "#ff5638" if nd < today else col
+            mc = "#e0492f" if nd < today else col
             parts.append(f'<path d="M {nx:.1f} {y+3} l 5 5 l -5 5 l -5 -5 z" fill="{mc}"><title>下個關鍵期限 {p["next_due"]}</title></path>')
     parts.append("</svg>")
     return "".join(parts)
@@ -496,9 +496,9 @@ def render_portfolio(pf):
         if nd:
             late = (d(nd) - today).days
             if late < 0:
-                nd_html = f'<b style="color:#ff7a5e">{nd}（逾期 {abs(late)} 天）</b>'
+                nd_html = f'<b style="color:#e0492f">{nd}（逾期 {abs(late)} 天）</b>'
             elif late <= 7:
-                nd_html = f'<b style="color:#f5c451">{nd}（{late} 天後）</b>'
+                nd_html = f'<b style="color:#c9921f">{nd}（{late} 天後）</b>'
             else:
                 nd_html = nd
         risk = p.get("risk")
@@ -564,7 +564,7 @@ def render_portfolio(pf):
     sug_html = "".join(f"<li>{s}</li>" for s in sug)
 
     return f"""<header class="pf-header">
-    {donut(avg, "#46c8c8", label=f"{avg}%")}
+    {donut(avg, "#16181c", label=f"{avg}%")}
     <div class="title"><h1>📊 {esc(pf['title'])}</h1>
       <p>來源：{esc(pf['source'])}　·　同步於 {esc(pf['synced_at'])}　·　基準日 {pf['today']}</p>
       <p class="est-note">完成度為可調整估計值；階段與日期為 Notion 快照，說「更新總覽」可重新同步。</p>
@@ -577,9 +577,9 @@ def render_portfolio(pf):
     <section><h2>我的建議</h2><ul class="suggest">{sug_html}</ul></section>
   </div>
   <section><h2>專案時程規劃</h2>{pf_gantt(projects, today)}
-    <div class="legend"><span><i style="background:#ff5638"></i>高優先</span>
-      <span><i style="background:#f5c451"></i>中優先</span>
-      <span><i style="background:#ff5638;transform:rotate(45deg)"></i>下個關鍵期限</span></div>
+    <div class="legend"><span><i style="background:#e0492f"></i>高優先</span>
+      <span><i style="background:#c9921f"></i>中優先</span>
+      <span><i style="background:#e0492f;transform:rotate(45deg)"></i>下個關鍵期限</span></div>
   </section>"""
 
 
@@ -624,37 +624,38 @@ def render(ctx):
 <title>{esc(p['name'])} · 代理團隊 Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {{
-  --bg:#0c0d10; --panel:#14161b; --panel2:#1b1e25; --line:#2a2e37;
-  --ink:#e7e5e0; --muted:#8b909b; --track:#262a33;
-  --accent:{ACCENT}; --amber:#f5c451; --cyan:#46c8c8; --ok:#5fd38a;
+  --bg:#f3f3ef; --panel:#ffffff; --panel2:#f7f7f3; --line:#e4e4de;
+  --ink:#16181c; --muted:#6c7077; --track:#ebebe5;
+  --accent:{ACCENT}; --amber:#c9921f; --cyan:#1f8a8a; --ok:#2f8f57;
 }}
 * {{ box-sizing:border-box; }}
 body {{ margin:0; color:var(--ink); line-height:1.5;
-  font-family:'Rajdhani',-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
-  background:#0c0d10;
+  font-family:'Inter',-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:#f3f3ef;
   background-image:
-    radial-gradient(1200px 600px at 82% -12%, rgba(255,86,56,.10), transparent 60%),
-    radial-gradient(900px 520px at -12% 112%, rgba(70,200,200,.06), transparent 60%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,.015) 0 2px, transparent 2px 9px);
+    radial-gradient(circle at 88% 6%, rgba(194,224,0,.13), transparent 36%),
+    repeating-radial-gradient(circle at 95% -6%, rgba(0,0,0,.03) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.015) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.015) 0 1px, transparent 1px 40px);
   background-attachment:fixed; }}
 .wrap {{ max-width:1100px; margin:0 auto; padding:20px 18px 60px; }}
 .topbar {{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }}
 .updbtn {{ background:var(--accent); color:#10110f; border:none; cursor:pointer;
-  font-family:'Rajdhani',inherit; font-weight:700; font-size:14px; letter-spacing:.05em;
+  font-family:'Oswald','Inter',sans-serif; font-weight:700; font-size:14px; letter-spacing:.05em;
   padding:11px 22px; text-transform:uppercase;
   clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%); }}
 .updbtn:disabled {{ opacity:.5; }}
 .upd-time {{ font-size:11px; color:var(--muted); letter-spacing:.06em; font-family:'Oswald',sans-serif; }}
-.sync-banner {{ display:none; background:rgba(255,86,56,.12); color:#ff7a5e;
-  border:1px solid rgba(255,86,56,.4); border-left:4px solid var(--accent);
+.sync-banner {{ display:none; background:#fdf0ed; color:#d23b22;
+  border:1px solid #f0c4bb; border-left:4px solid #e0492f;
   padding:11px 14px; font-size:13px; font-weight:600; margin-bottom:12px; }}
 .tabs {{ display:flex; gap:6px; margin-bottom:16px; position:sticky; top:0; z-index:10;
-  background:linear-gradient(#0c0d10,#0c0d10 70%,transparent); padding:10px 0 12px; }}
+  background:linear-gradient(#f3f3ef,#f3f3ef 70%,transparent); padding:10px 0 12px; }}
 .tab {{ flex:1; padding:12px 14px; text-align:center; text-decoration:none; cursor:pointer;
-  font-family:'Rajdhani',inherit; font-weight:700; font-size:14px; letter-spacing:.07em;
+  font-family:'Oswald','Inter',sans-serif; font-weight:700; font-size:14px; letter-spacing:.07em;
   color:var(--muted); background:var(--panel); border:1px solid var(--line);
   clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%); }}
 .tab.active {{ background:var(--accent); color:#10110f; border-color:var(--accent); }}
@@ -663,10 +664,12 @@ body.js .page {{ display:none; }}
 body.js .page.active {{ display:block; }}
 body:not(.js) #page-portfolio {{ border-top:1px dashed var(--line); margin-top:16px; padding-top:16px; }}
 header {{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:20px;
-  padding-bottom:16px; border-bottom:1px solid var(--line); position:relative; }}
-header::after {{ content:""; position:absolute; left:0; bottom:-1px; width:150px; height:3px;
-  background:repeating-linear-gradient(135deg,var(--amber) 0 8px,#0c0d10 8px 15px); }}
-header .title h1 {{ margin:0 0 4px; font-size:26px; font-weight:700; letter-spacing:.02em; }}
+  padding-bottom:16px; border-bottom:2px solid var(--ink); position:relative; }}
+header::after {{ content:""; position:absolute; left:0; bottom:-2px; width:170px; height:4px;
+  background:repeating-linear-gradient(135deg,#e9e000 0 9px,#16181c 9px 16px); }}
+header .title h1 {{ margin:0 0 4px; font-size:28px; font-weight:700; letter-spacing:-.01em;
+  font-family:'Oswald','Inter',"PingFang TC",sans-serif; }}
+header .title h1::before {{ content:"// "; color:#9bb300; font-weight:700; }}
 header .title p {{ margin:0; color:var(--muted); font-size:12.5px; letter-spacing:.03em; }}
 .donut text {{ font-family:'Oswald',sans-serif; }}
 .timebar {{ flex:1; min-width:200px; }}
@@ -677,9 +680,9 @@ header .title p {{ margin:0; color:var(--muted); font-size:12.5px; letter-spacin
 section {{ background:var(--panel); border:1px solid var(--line); padding:18px 20px; margin-bottom:16px;
   position:relative; clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%); }}
 section::before {{ content:""; position:absolute; left:0; top:0; width:3px; height:22px; background:var(--accent); }}
-h2 {{ font-size:13px; margin:0 0 14px; color:var(--ink); display:flex; align-items:center; gap:10px;
-  text-transform:uppercase; letter-spacing:.13em; font-weight:600; }}
-h2::before {{ content:""; width:13px; height:13px; background:var(--accent); transform:skewX(-14deg); display:inline-block; }}
+h2 {{ font-size:14px; margin:0 0 14px; color:var(--ink); display:flex; align-items:center; gap:7px;
+  text-transform:uppercase; letter-spacing:.1em; font-weight:600; font-family:'Oswald','Inter',"PingFang TC",sans-serif; }}
+h2::before {{ content:"//"; color:#9bb300; font-weight:700; font-family:'Oswald',sans-serif; }}
 .kpis {{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }}
 .kpi {{ background:var(--panel2); border:1px solid var(--line); padding:14px 10px; text-align:center;
   clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%); }}
@@ -694,7 +697,7 @@ h2::before {{ content:""; width:13px; height:13px; background:var(--accent); tra
 .agent-name {{ font-weight:700; font-size:13px; }}
 .agent-role {{ font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }}
 .agent-status {{ font-size:12px; font-weight:700; margin:8px 0 4px; letter-spacing:.05em; }}
-.agent-cur {{ font-size:11px; color:#b9bcc4; min-height:30px; background:#0f1116; border:1px solid var(--line); padding:5px 7px; }}
+.agent-cur {{ font-size:11px; color:#4a4f57; min-height:30px; background:var(--panel2); border:1px solid var(--line); padding:5px 7px; }}
 .agent-meta {{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:8px; font-family:'Oswald',sans-serif; }}
 .board {{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }}
 .col-head {{ font-size:11px; font-weight:700; margin-bottom:8px; display:flex; justify-content:space-between;
@@ -704,10 +707,10 @@ h2::before {{ content:""; width:13px; height:13px; background:var(--accent); tra
 .card-id {{ font-size:10px; color:var(--muted); font-weight:700; margin-bottom:3px; font-family:'Oswald',sans-serif; letter-spacing:.04em; }}
 .card-title {{ font-size:12px; margin-bottom:6px; color:var(--ink); }}
 .tag {{ font-size:9px; padding:0 5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }}
-.tag-feature {{ background:rgba(95,211,138,.15); color:#5fd38a; }}
-.tag-bug {{ background:rgba(255,86,56,.16); color:#ff7a5e; }}
-.tag-chore {{ background:#262a33; color:var(--muted); }}
-.tag-video {{ background:rgba(70,200,200,.15); color:var(--cyan); }}
+.tag-feature {{ background:#e7f0ea; color:#2f8f57; }}
+.tag-bug {{ background:#fae5e0; color:#d23b22; }}
+.tag-chore {{ background:#ededea; color:var(--muted); }}
+.tag-video {{ background:#e6f3f3; color:#1f8a8a; }}
 .pbar {{ height:4px; background:var(--track); overflow:hidden; margin:5px 0; }}
 .pbar span {{ display:block; height:100%; }}
 .card-foot {{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); }}
@@ -750,10 +753,10 @@ footer {{ text-align:center; color:#4a4f59; font-size:10px; margin-top:24px; let
 .pcard-pct {{ font-size:11px; color:var(--muted); font-family:'Oswald',sans-serif; }}
 .est {{ color:#5b606b; }}
 .pcard-dates {{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin:7px 0; }}
-.pcard-week {{ font-size:12px; background:#0f1116; border:1px solid var(--line); padding:6px 8px; color:#b9bcc4; }}
-.pcard-risk {{ font-size:11px; color:#ff7a5e; margin-top:6px; }}
+.pcard-week {{ font-size:12px; background:var(--panel2); border:1px solid var(--line); padding:6px 8px; color:#4a4f57; }}
+.pcard-risk {{ font-size:11px; color:#d23b22; margin-top:6px; }}
 .pcard-foot {{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:8px; }}
-.pcard-foot a {{ color:var(--accent); text-decoration:none; font-weight:700; }}
+.pcard-foot a {{ color:#7e9100; text-decoration:none; font-weight:700; }}
 .oi {{ font-size:10px; font-weight:700; color:var(--amber); background:rgba(245,196,81,.14); padding:1px 8px; margin-left:6px; }}
 .reminders {{ display:flex; flex-direction:column; gap:2px; }}
 .r-grp {{ font-size:11px; font-weight:700; color:var(--muted); margin:12px 0 2px; text-transform:uppercase; letter-spacing:.06em; }}
@@ -763,11 +766,11 @@ footer {{ text-align:center; color:#4a4f59; font-size:10px; margin-top:24px; let
 .r-dot {{ width:9px; height:9px; flex:none; }}
 .r-body {{ flex:1; font-size:12.5px; color:var(--ink); }}
 .r-meta {{ font-size:10.5px; color:var(--muted); }}
-.r-late {{ font-size:10px; font-weight:700; color:#10110f; background:var(--accent); padding:2px 7px; white-space:nowrap; }}
+.r-late {{ font-size:10px; font-weight:700; color:#fff; background:#e0492f; padding:2px 7px; white-space:nowrap; }}
 .r-soon {{ font-size:10px; font-weight:700; color:var(--amber); background:rgba(245,196,81,.14); padding:2px 7px; white-space:nowrap; }}
 .r-ok {{ font-size:10px; color:var(--muted); white-space:nowrap; font-family:'Oswald',sans-serif; }}
 .suggest {{ margin:0; padding-left:0; list-style:none; }}
-.suggest li {{ font-size:12.5px; color:#c2c5cd; padding:7px 0 7px 14px; border-bottom:1px solid var(--line); line-height:1.5; position:relative; }}
+.suggest li {{ font-size:12.5px; color:#3f444b; padding:7px 0 7px 14px; border-bottom:1px solid var(--line); line-height:1.5; position:relative; }}
 .suggest li::before {{ content:""; position:absolute; left:0; top:13px; width:6px; height:6px; background:var(--accent); transform:skewX(-14deg); }}
 @media(max-width:820px){{
   .pf-kpis{{grid-template-columns:repeat(3,1fr)}} .pcards{{grid-template-columns:1fr}} .kpis{{grid-template-columns:repeat(3,1fr)}} .agents,.board{{grid-template-columns:repeat(2,1fr)}} .two{{grid-template-columns:1fr}} .ms-row{{grid-template-columns:1fr}} }}
