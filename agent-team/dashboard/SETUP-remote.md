@@ -62,14 +62,26 @@
 
 ---
 
-## 五、讓「立即更新」真的連 Notion（選配）
+## 五、讓「立即更新」真的連 Notion
 
-目前 `/api/sync` 會重產 dashboard（用電腦上現有的資料）。要做到**按一下就即時從 Notion 重拉**，
-需在 `agent-team/dashboard/` 放一支 `sync_notion.py`（用 Notion integration token 呼叫 API
-覆寫 `portfolio.json`）。`serve.py` 偵測到它就會在重產前先執行。
+`sync_notion.py` 已備妥（`serve.py` 偵測到就會在重產前自動先跑它），讓「⟳ 立即更新」
+真的即時從 Notion 重拉。只差你做一次 token 設定：
 
-> 這支要先到 Notion → Settings → Connections → 開一個 integration 拿 token，並把相關資料庫分享給它。
-> 需要的話跟我說，我幫你把 `sync_notion.py` 寫好。
+1. **Notion → Settings → Connections → Develop or manage integrations → New integration**
+   （internal），複製 token（`ntn_...` / `secret_...`）。
+2. 到「全客戶專案總表」與「追蹤事項庫」兩個資料庫，右上 **…** → **Connections** → 加入剛建的 integration（這樣它才讀得到）。
+3. 啟動後端時一起帶上 token：
+   ```bash
+   export NOTION_TOKEN=ntn_你的token
+   AGENT_TEAM_TOKEN=你的存取密碼 python3 agent-team/dashboard/serve.py
+   ```
+   （也可單獨測試：`NOTION_TOKEN=... python3 agent-team/dashboard/sync_notion.py`）
+
+`sync_notion.py` 會**用名稱自動找到那兩個資料庫**（不必手動填 ID），拉資料覆寫 `portfolio.json`；
+完成度沿用既有的手動估計值。若自動搜尋找不到，可改用環境變數 `NOTION_PROJECTS_DB` /
+`NOTION_TASKS_DB` 指定資料庫 id。
+
+> token 只放你電腦的環境變數，**永遠不會進 repo**。
 
 ---
 
