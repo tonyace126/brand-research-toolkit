@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tasks",
+  "type": "object",
+  "required": ["tasks"],
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "type", "status", "milestone", "progress"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^T-[0-9]+$" },
+          "title": { "type": "string" },
+          "type": { "enum": ["feature", "bug", "chore", "video"] },
+          "status": { "enum": ["backlog", "planned", "in_progress", "review", "done", "blocked"] },
+          "assignee": { "type": ["string", "null"], "description": "agents.json 的 agent id" },
+          "milestone": { "type": "string", "description": "project.json milestone id" },
+          "progress": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "estimate_hours": { "type": "number", "minimum": 0 },
+          "spent_hours": { "type": "number", "minimum": 0 },
+          "created": { "type": "string", "format": "date" },
+          "started": { "type": ["string", "null"], "format": "date" },
+          "due": { "type": ["string", "null"], "format": "date" },
+          "completed": { "type": ["string", "null"], "format": "date" },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

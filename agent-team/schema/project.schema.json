@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "project",
+  "type": "object",
+  "required": ["id", "name", "start_date", "target_date", "milestones"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "start_date": { "type": "string", "format": "date" },
+    "target_date": { "type": "string", "format": "date" },
+    "timezone": { "type": "string" },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "due", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "due": { "type": "string", "format": "date" },
+          "status": { "enum": ["planned", "in_progress", "done"] }
+        }
+      }
+    }
+  }
+}
