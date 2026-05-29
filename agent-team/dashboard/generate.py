@@ -588,7 +588,18 @@ def render(ctx):
     overdue = ctx["days_left"] < 0
     days_txt = f'{abs(ctx["days_left"])} 天{"已逾期" if overdue else "後到期"}'
     pf = ctx.get("portfolio")
-    tabs = team_open = team_close = portfolio_section = script = ""
+    tabs = team_open = team_close = portfolio_section = ""
+    updatebar = (f'<div class="topbar"><button class="updbtn" onclick="syncNow(this)">⟳ 立即更新</button>'
+                 f'<span class="upd-time">最後同步 {datetime.now().strftime("%m/%d %H:%M")}</span></div>'
+                 '<div id="sync-banner" class="sync-banner">⚠️ 終端機未連線！無法同步 — 請確認電腦上的同步服務（serve.py）已啟動。</div>')
+    js = ['document.body.classList.add("js");',
+          ('async function syncNow(b){var bn=document.getElementById("sync-banner");bn.style.display="none";'
+           'var o=b.textContent;b.disabled=true;b.textContent="同步中…";'
+           'try{var c=new AbortController();var t=setTimeout(function(){c.abort();},4000);'
+           'var r=await fetch("api/sync",{method:"POST",signal:c.signal});clearTimeout(t);'
+           'if(!r.ok)throw 0;location.reload();}'
+           'catch(e){bn.style.display="block";b.disabled=false;b.textContent=o;'
+           'window.scrollTo(0,0);}}')]
     if pf:
         tabs = ('<nav class="tabs">'
                 '<a class="tab active" href="#page-team" data-page="team">🐝 代理團隊</a>'
@@ -597,14 +608,14 @@ def render(ctx):
         team_open = '<div id="page-team" class="page active">'
         team_close = '</div>'
         portfolio_section = f'<div id="page-portfolio" class="page">{render_portfolio(pf)}</div>'
-        script = ('<script>document.body.classList.add("js");'
-                  'document.querySelectorAll(".tab").forEach(function(b){'
+        js.append('document.querySelectorAll(".tab").forEach(function(b){'
                   'b.addEventListener("click",function(){'
                   'document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active")});'
                   'document.querySelectorAll(".page").forEach(function(x){x.classList.remove("active")});'
                   'b.classList.add("active");'
                   'document.getElementById("page-"+b.dataset.page).classList.add("active");'
-                  'window.scrollTo(0,0);});});</script>')
+                  'window.scrollTo(0,0);});});')
+    script = "<script>" + "".join(js) + "</script>"
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -678,6 +689,11 @@ th {{ color:#999; font-weight:600; font-size:11px; }}
 .legend {{ display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:#888; margin-top:8px; }}
 .legend i {{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:middle; }}
 footer {{ text-align:center; color:#bbb; font-size:11px; margin-top:20px; }}
+.topbar {{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }}
+.updbtn {{ background:var(--accent); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }}
+.updbtn:disabled {{ opacity:.6; }}
+.upd-time {{ font-size:11px; color:#bbb; }}
+.sync-banner {{ display:none; background:#fae8e4; color:#c8553d; border:1px solid #e9b8ad; border-radius:10px; padding:11px 14px; font-size:13px; font-weight:600; margin-bottom:12px; }}
 .tabs {{ display:flex; gap:8px; margin-bottom:16px; position:sticky; top:0; background:#f7f5f3; padding:10px 0; z-index:10; }}
 .tab {{ flex:1; padding:11px 12px; border:1px solid #e4ded8; background:#fff; border-radius:10px; font-size:14px; font-weight:600; color:#888; cursor:pointer; font-family:inherit; text-align:center; text-decoration:none; display:block; }}
 .tab.active {{ background:var(--accent); color:#fff; border-color:var(--accent); }}
@@ -725,6 +741,7 @@ body:not(.js) #page-portfolio {{ border-top:2px dashed #e4ded8; margin-top:14px;
 </head>
 <body>
 <div class="wrap">
+  {updatebar}
   {tabs}
   {team_open}
   <header>
