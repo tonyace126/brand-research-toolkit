@@ -32,14 +32,14 @@ STATUS_LABEL = {
     "blocked": "卡關",
 }
 STATUS_COLOR = {
-    "backlog": "#9aa0a6",
-    "planned": "#2f6f8f",
-    "in_progress": "#b8860b",
-    "review": "#8a5fb0",
-    "done": "#3c7a4d",
-    "blocked": "#c8553d",
+    "backlog": "#6b7280",
+    "planned": "#46a6c8",
+    "in_progress": "#f5c451",
+    "review": "#b18cf0",
+    "done": "#5fd38a",
+    "blocked": "#ff5638",
 }
-ACCENT = "#c8553d"
+ACCENT = "#ff5638"
 
 
 # ----------------------------------------------------------------------------
@@ -182,12 +182,12 @@ def donut(pct, color=ACCENT, size=128, label=None):
     dash = c * pct / 100
     label = label if label is not None else f"{pct}%"
     return f"""<svg viewBox="0 0 {size} {size}" width="{size}" height="{size}" class="donut">
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#eee" stroke-width="12"/>
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="12"
-    stroke-dasharray="{dash:.1f} {c:.1f}" stroke-linecap="round"
+  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#262a33" stroke-width="10"/>
+  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" stroke-width="10"
+    stroke-dasharray="{dash:.1f} {c:.1f}" stroke-linecap="butt"
     transform="rotate(-90 {cx} {cy})"/>
   <text x="{cx}" y="{cy}" text-anchor="middle" dominant-baseline="central"
-    font-size="26" font-weight="700" fill="#222">{label}</text>
+    font-size="28" font-weight="600" fill="#e7e5e0">{label}</text>
 </svg>"""
 
 
@@ -212,7 +212,7 @@ def daily_chart(daily):
         if ev:
             bars.append(
                 f'<text x="{x + bw/2:.1f}" y="{y - 3:.1f}" text-anchor="middle" '
-                f'font-size="9" fill="#888">{ev}</text>'
+                f'font-size="9" fill="#8b909b" font-family="Oswald,sans-serif">{ev}</text>'
             )
         # 完成標記
         if dn:
@@ -223,12 +223,12 @@ def daily_chart(daily):
         lbl = dt.strftime("%m/%d")
         bars.append(
             f'<text x="{x + bw/2:.1f}" y="{h - 6:.1f}" text-anchor="middle" '
-            f'font-size="8.5" fill="#aaa">{lbl}</text>'
+            f'font-size="8.5" fill="#5b606b" font-family="Oswald,sans-serif">{lbl}</text>'
         )
     base = pad_t + plot_h
     return (
         f'<svg viewBox="0 0 {w} {h}" class="chart" preserveAspectRatio="xMidYMid meet">'
-        f'<line x1="{pad_l}" y1="{base}" x2="{w-10}" y2="{base}" stroke="#e5e5e5"/>'
+        f'<line x1="{pad_l}" y1="{base}" x2="{w-10}" y2="{base}" stroke="#2a2e37"/>'
         + "".join(bars)
         + "</svg>"
     )
@@ -254,8 +254,8 @@ def gantt(ctx):
     cur = date(start.year, start.month, 1)
     while cur <= target:
         x = x_of(cur)
-        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#f0f0f0"/>')
-        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#aaa">{cur.strftime("%Y/%m")}</text>')
+        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#1f232b"/>')
+        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#5b606b" font-family="Oswald,sans-serif">{cur.strftime("%Y/%m")}</text>')
         cur = date(cur.year + (cur.month // 12), (cur.month % 12) + 1, 1)
 
     # 今日線
@@ -284,7 +284,7 @@ def gantt(ctx):
         label = f'{t["id"]} {t["title"]}'
         if len(label) > 30:
             label = label[:29] + "…"
-        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#444">{esc(label)}</text>')
+        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#c2c5cd">{esc(label)}</text>')
         # 底條 + 進度填充
         parts.append(f'<rect x="{x1:.1f}" y="{y+5:.1f}" width="{bw:.1f}" height="14" rx="4" fill="{col}" opacity="0.28"/>')
         fillw = bw * t["progress"] / 100
@@ -312,8 +312,8 @@ def agent_cards(ctx):
         if ct:
             tk = next((t for t in ctx["tasks"] if t["id"] == ct), None)
             ct_title = f'{ct} {tk["title"]}' if tk else ct
-        sb = {"active": ("●", "#3c7a4d", "工作中"), "idle": ("○", "#9aa0a6", "待命"),
-              "blocked": ("▲", "#c8553d", "卡關")}.get(a["status"], ("○", "#999", a["status"]))
+        sb = {"active": ("●", "#5fd38a", "工作中"), "idle": ("○", "#8b909b", "待命"),
+              "blocked": ("▲", "#ff5638", "卡關")}.get(a["status"], ("○", "#8b909b", a["status"]))
         out.append(f"""<div class="agent" style="border-top:3px solid {a.get('color', ACCENT)}">
   <div class="agent-top"><span class="agent-emoji">{a.get('emoji','🤖')}</span>
     <div><div class="agent-name">{esc(a['name'])}</div>
@@ -386,9 +386,9 @@ def activity_feed(ctx):
     return "".join(rows)
 
 
-PRIO_PF = {"高": ("🔴", "#c8553d"), "中": ("🟡", "#b8860b"), "低": ("🟢", "#3c7a4d")}
-PF_STAGE = {"進行中": "#2f6f8f", "未開始": "#9aa0a6", "完成": "#3c7a4d"}
-TYPE_COLOR = {"我方承諾": "#c8553d", "對方承諾": "#2f6f8f", "主動追蹤": "#b8860b", "風險警示": "#cc6b1f"}
+PRIO_PF = {"高": ("🔴", "#ff5638"), "中": ("🟡", "#f5c451"), "低": ("🟢", "#5fd38a")}
+PF_STAGE = {"進行中": "#46a6c8", "未開始": "#6b7280", "完成": "#5fd38a"}
+TYPE_COLOR = {"我方承諾": "#ff5638", "對方承諾": "#46a6c8", "主動追蹤": "#f5c451", "風險警示": "#ff8c42"}
 
 
 def rem_row(r, today):
@@ -434,8 +434,8 @@ def pf_gantt(projects, today):
     cur = date(start.year, start.month, 1)
     while cur <= end:
         x = x_of(cur)
-        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#f0f0f0"/>')
-        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#aaa">{cur.strftime("%m/%d")}</text>')
+        parts.append(f'<line x1="{x:.1f}" y1="{top-8}" x2="{x:.1f}" y2="{h-10}" stroke="#1f232b"/>')
+        parts.append(f'<text x="{x+3:.1f}" y="{top-12}" font-size="10" fill="#5b606b" font-family="Oswald,sans-serif">{cur.strftime("%m/%d")}</text>')
         cur = date(cur.year + (cur.month // 12), (cur.month % 12) + 1, 1)
     tx = x_of(today)
     parts.append(f'<line x1="{tx:.1f}" y1="{top-8}" x2="{tx:.1f}" y2="{h-10}" stroke="{ACCENT}" stroke-dasharray="3 3"/>')
@@ -453,14 +453,14 @@ def pf_gantt(projects, today):
         label = f'{p["code"]} {p["name"]}'
         if len(label) > 22:
             label = label[:21] + "…"
-        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#444">{esc(label)}</text>')
+        parts.append(f'<text x="8" y="{y+row_h/2+4:.1f}" font-size="11" fill="#c2c5cd">{esc(label)}</text>')
         parts.append(f'<rect x="{x1:.1f}" y="{y+6:.1f}" width="{bw:.1f}" height="14" rx="4" fill="{col}" opacity="0.28"/>')
         fillw = bw * p.get("completion", 0) / 100
         parts.append(f'<rect x="{x1:.1f}" y="{y+6:.1f}" width="{fillw:.1f}" height="14" rx="4" fill="{col}"><title>{esc(p["name"])}｜完成度 {p.get("completion",0)}%</title></rect>')
         nd = d(p.get("next_due"))
         if nd:
             nx = x_of(nd)
-            mc = "#c8553d" if nd < today else col
+            mc = "#ff5638" if nd < today else col
             parts.append(f'<path d="M {nx:.1f} {y+3} l 5 5 l -5 5 l -5 -5 z" fill="{mc}"><title>下個關鍵期限 {p["next_due"]}</title></path>')
     parts.append("</svg>")
     return "".join(parts)
@@ -496,9 +496,9 @@ def render_portfolio(pf):
         if nd:
             late = (d(nd) - today).days
             if late < 0:
-                nd_html = f'<b style="color:#c8553d">{nd}（逾期 {abs(late)} 天）</b>'
+                nd_html = f'<b style="color:#ff7a5e">{nd}（逾期 {abs(late)} 天）</b>'
             elif late <= 7:
-                nd_html = f'<b style="color:#b8860b">{nd}（{late} 天後）</b>'
+                nd_html = f'<b style="color:#f5c451">{nd}（{late} 天後）</b>'
             else:
                 nd_html = nd
         risk = p.get("risk")
@@ -564,7 +564,7 @@ def render_portfolio(pf):
     sug_html = "".join(f"<li>{s}</li>" for s in sug)
 
     return f"""<header class="pf-header">
-    {donut(avg, "#2f6f8f", label=f"{avg}%")}
+    {donut(avg, "#46c8c8", label=f"{avg}%")}
     <div class="title"><h1>📊 {esc(pf['title'])}</h1>
       <p>來源：{esc(pf['source'])}　·　同步於 {esc(pf['synced_at'])}　·　基準日 {pf['today']}</p>
       <p class="est-note">完成度為可調整估計值；階段與日期為 Notion 快照，說「更新總覽」可重新同步。</p>
@@ -577,9 +577,9 @@ def render_portfolio(pf):
     <section><h2>我的建議</h2><ul class="suggest">{sug_html}</ul></section>
   </div>
   <section><h2>專案時程規劃</h2>{pf_gantt(projects, today)}
-    <div class="legend"><span><i style="background:#c8553d"></i>高優先</span>
-      <span><i style="background:#b8860b"></i>中優先</span>
-      <span><i style="background:#c8553d;transform:rotate(45deg)"></i>下個關鍵期限</span></div>
+    <div class="legend"><span><i style="background:#ff5638"></i>高優先</span>
+      <span><i style="background:#f5c451"></i>中優先</span>
+      <span><i style="background:#ff5638;transform:rotate(45deg)"></i>下個關鍵期限</span></div>
   </section>"""
 
 
@@ -622,119 +622,153 @@ def render(ctx):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(p['name'])} · 代理團隊 Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {{ --accent:{ACCENT}; }}
+:root {{
+  --bg:#0c0d10; --panel:#14161b; --panel2:#1b1e25; --line:#2a2e37;
+  --ink:#e7e5e0; --muted:#8b909b; --track:#262a33;
+  --accent:{ACCENT}; --amber:#f5c451; --cyan:#46c8c8; --ok:#5fd38a;
+}}
 * {{ box-sizing:border-box; }}
-body {{ margin:0; font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
-  background:#f7f5f3; color:#222; line-height:1.5; }}
-.wrap {{ max-width:1080px; margin:0 auto; padding:24px 20px 60px; }}
-header {{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:20px; }}
-header .title h1 {{ margin:0 0 4px; font-size:24px; }}
-header .title p {{ margin:0; color:#888; font-size:13px; }}
-.donut text {{ font-family:inherit; }}
-.timebar {{ flex:1; min-width:200px; }}
-.timebar .tb {{ height:8px; border-radius:4px; background:#e8e4e0; overflow:hidden; margin:6px 0; }}
-.timebar .tb span {{ display:block; height:100%; background:var(--accent); }}
-.timebar small {{ color:#999; }}
-section {{ background:#fff; border:1px solid #ececec; border-radius:12px; padding:18px 20px; margin-bottom:18px; }}
-h2 {{ font-size:15px; margin:0 0 14px; color:#444; display:flex; align-items:center; gap:8px; }}
-h2::before {{ content:""; width:4px; height:16px; background:var(--accent); border-radius:2px; }}
-.kpis {{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }}
-.kpi {{ background:#fff; border:1px solid #ececec; border-radius:10px; padding:14px; text-align:center; }}
-.kpi-val {{ font-size:26px; font-weight:700; }}
-.kpi-lbl {{ font-size:12px; color:#888; margin-top:2px; }}
-.kpi-sub {{ font-size:11px; color:#bbb; margin-top:2px; }}
-.agents {{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }}
-.agent {{ border:1px solid #ececec; border-radius:10px; padding:12px; background:#fff; }}
-.agent-top {{ display:flex; gap:8px; align-items:center; }}
-.agent-emoji {{ font-size:22px; }}
-.agent-name {{ font-weight:700; font-size:13px; }}
-.agent-role {{ font-size:10px; color:#aaa; }}
-.agent-status {{ font-size:12px; font-weight:600; margin:8px 0 4px; }}
-.agent-cur {{ font-size:11px; color:#666; min-height:30px; background:#faf8f6; border-radius:6px; padding:5px 7px; }}
-.agent-meta {{ display:flex; justify-content:space-between; font-size:10px; color:#aaa; margin-top:8px; }}
-.board {{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }}
-.col-head {{ font-size:12px; font-weight:700; margin-bottom:8px; display:flex; justify-content:space-between; }}
-.col-head span {{ background:#f0ece8; color:#888; border-radius:10px; padding:0 7px; font-size:11px; }}
-.card {{ background:#fff; border:1px solid #eee; border-radius:8px; padding:9px 10px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.03); }}
-.card-id {{ font-size:10px; color:#aaa; font-weight:700; margin-bottom:3px; }}
-.card-title {{ font-size:12px; margin-bottom:6px; }}
-.tag {{ font-size:9px; padding:0 5px; border-radius:8px; font-weight:600; }}
-.tag-feature {{ background:#e7f0ea; color:#3c7a4d; }}
-.tag-bug {{ background:#fae8e4; color:#c8553d; }}
-.tag-chore {{ background:#eee; color:#888; }}
-.tag-video {{ background:#e3f0f2; color:#00798c; }}
-.pbar {{ height:5px; background:#f0ece8; border-radius:3px; overflow:hidden; margin:5px 0; }}
-.pbar span {{ display:block; height:100%; }}
-.card-foot {{ display:flex; justify-content:space-between; font-size:10px; color:#999; }}
-.due {{ color:#b8860b; }}
-.empty {{ color:#ddd; text-align:center; font-size:12px; padding:10px 0; }}
-.ms-row {{ display:grid; grid-template-columns:1.4fr 2fr 1.6fr; gap:14px; align-items:center; margin-bottom:12px; font-size:13px; }}
-.ms-name {{ font-weight:600; }}
-.ms-due {{ font-size:11px; color:#bbb; font-weight:400; }}
-.ms-bar {{ height:9px; background:#f0ece8; border-radius:5px; overflow:hidden; }}
-.ms-bar span {{ display:block; height:100%; }}
-.ms-stat {{ font-size:12px; color:#888; }}
-.two {{ display:grid; grid-template-columns:1.6fr 1fr; gap:18px; }}
-table {{ width:100%; border-collapse:collapse; font-size:13px; }}
-th, td {{ text-align:left; padding:7px 8px; border-bottom:1px solid #f0f0f0; }}
-th {{ color:#999; font-weight:600; font-size:11px; }}
-.chart, .gantt {{ width:100%; height:auto; }}
-.feed-row {{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid #f5f5f5; }}
-.feed-emoji {{ font-size:18px; }}
-.feed-line {{ font-size:12px; }}
-.feed-task {{ background:#f0ece8; color:#888; border-radius:6px; padding:0 5px; font-size:10px; font-weight:700; }}
-.feed-detail {{ font-size:11px; color:#999; }}
-.feed-ts {{ margin-left:auto; font-size:10px; color:#ccc; white-space:nowrap; }}
-.legend {{ display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:#888; margin-top:8px; }}
-.legend i {{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:middle; }}
-footer {{ text-align:center; color:#bbb; font-size:11px; margin-top:20px; }}
-.topbar {{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }}
-.updbtn {{ background:var(--accent); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }}
-.updbtn:disabled {{ opacity:.6; }}
-.upd-time {{ font-size:11px; color:#bbb; }}
-.sync-banner {{ display:none; background:#fae8e4; color:#c8553d; border:1px solid #e9b8ad; border-radius:10px; padding:11px 14px; font-size:13px; font-weight:600; margin-bottom:12px; }}
-.tabs {{ display:flex; gap:8px; margin-bottom:16px; position:sticky; top:0; background:#f7f5f3; padding:10px 0; z-index:10; }}
-.tab {{ flex:1; padding:11px 12px; border:1px solid #e4ded8; background:#fff; border-radius:10px; font-size:14px; font-weight:600; color:#888; cursor:pointer; font-family:inherit; text-align:center; text-decoration:none; display:block; }}
-.tab.active {{ background:var(--accent); color:#fff; border-color:var(--accent); }}
+body {{ margin:0; color:var(--ink); line-height:1.5;
+  font-family:'Rajdhani',-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:#0c0d10;
+  background-image:
+    radial-gradient(1200px 600px at 82% -12%, rgba(255,86,56,.10), transparent 60%),
+    radial-gradient(900px 520px at -12% 112%, rgba(70,200,200,.06), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.015) 0 2px, transparent 2px 9px);
+  background-attachment:fixed; }}
+.wrap {{ max-width:1100px; margin:0 auto; padding:20px 18px 60px; }}
+.topbar {{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }}
+.updbtn {{ background:var(--accent); color:#10110f; border:none; cursor:pointer;
+  font-family:'Rajdhani',inherit; font-weight:700; font-size:14px; letter-spacing:.05em;
+  padding:11px 22px; text-transform:uppercase;
+  clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%); }}
+.updbtn:disabled {{ opacity:.5; }}
+.upd-time {{ font-size:11px; color:var(--muted); letter-spacing:.06em; font-family:'Oswald',sans-serif; }}
+.sync-banner {{ display:none; background:rgba(255,86,56,.12); color:#ff7a5e;
+  border:1px solid rgba(255,86,56,.4); border-left:4px solid var(--accent);
+  padding:11px 14px; font-size:13px; font-weight:600; margin-bottom:12px; }}
+.tabs {{ display:flex; gap:6px; margin-bottom:16px; position:sticky; top:0; z-index:10;
+  background:linear-gradient(#0c0d10,#0c0d10 70%,transparent); padding:10px 0 12px; }}
+.tab {{ flex:1; padding:12px 14px; text-align:center; text-decoration:none; cursor:pointer;
+  font-family:'Rajdhani',inherit; font-weight:700; font-size:14px; letter-spacing:.07em;
+  color:var(--muted); background:var(--panel); border:1px solid var(--line);
+  clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%); }}
+.tab.active {{ background:var(--accent); color:#10110f; border-color:var(--accent); }}
 .page {{ display:block; }}
 body.js .page {{ display:none; }}
 body.js .page.active {{ display:block; }}
-body:not(.js) #page-portfolio {{ border-top:2px dashed #e4ded8; margin-top:14px; padding-top:14px; }}
+body:not(.js) #page-portfolio {{ border-top:1px dashed var(--line); margin-top:16px; padding-top:16px; }}
+header {{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:20px;
+  padding-bottom:16px; border-bottom:1px solid var(--line); position:relative; }}
+header::after {{ content:""; position:absolute; left:0; bottom:-1px; width:150px; height:3px;
+  background:repeating-linear-gradient(135deg,var(--amber) 0 8px,#0c0d10 8px 15px); }}
+header .title h1 {{ margin:0 0 4px; font-size:26px; font-weight:700; letter-spacing:.02em; }}
+header .title p {{ margin:0; color:var(--muted); font-size:12.5px; letter-spacing:.03em; }}
+.donut text {{ font-family:'Oswald',sans-serif; }}
+.timebar {{ flex:1; min-width:200px; }}
+.timebar .tb {{ height:6px; background:var(--track); overflow:hidden; margin:6px 0;
+  clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%); }}
+.timebar .tb span {{ display:block; height:100%; background:var(--accent); }}
+.timebar small {{ color:var(--muted); font-size:11px; letter-spacing:.06em; font-family:'Oswald',sans-serif; }}
+section {{ background:var(--panel); border:1px solid var(--line); padding:18px 20px; margin-bottom:16px;
+  position:relative; clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%); }}
+section::before {{ content:""; position:absolute; left:0; top:0; width:3px; height:22px; background:var(--accent); }}
+h2 {{ font-size:13px; margin:0 0 14px; color:var(--ink); display:flex; align-items:center; gap:10px;
+  text-transform:uppercase; letter-spacing:.13em; font-weight:600; }}
+h2::before {{ content:""; width:13px; height:13px; background:var(--accent); transform:skewX(-14deg); display:inline-block; }}
+.kpis {{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; }}
+.kpi {{ background:var(--panel2); border:1px solid var(--line); padding:14px 10px; text-align:center;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%); }}
+.kpi-val {{ font-size:30px; font-weight:600; font-family:'Oswald',sans-serif; color:var(--ink); }}
+.kpi-lbl {{ font-size:11px; color:var(--muted); margin-top:2px; letter-spacing:.08em; text-transform:uppercase; }}
+.kpi-sub {{ font-size:10px; color:#5b606b; margin-top:2px; }}
+.agents {{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }}
+.agent {{ border:1px solid var(--line); background:var(--panel2); padding:12px;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%); }}
+.agent-top {{ display:flex; gap:8px; align-items:center; }}
+.agent-emoji {{ font-size:22px; }}
+.agent-name {{ font-weight:700; font-size:13px; }}
+.agent-role {{ font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }}
+.agent-status {{ font-size:12px; font-weight:700; margin:8px 0 4px; letter-spacing:.05em; }}
+.agent-cur {{ font-size:11px; color:#b9bcc4; min-height:30px; background:#0f1116; border:1px solid var(--line); padding:5px 7px; }}
+.agent-meta {{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:8px; font-family:'Oswald',sans-serif; }}
+.board {{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }}
+.col-head {{ font-size:11px; font-weight:700; margin-bottom:8px; display:flex; justify-content:space-between;
+  text-transform:uppercase; letter-spacing:.08em; padding-bottom:6px; border-bottom:1px solid var(--line); }}
+.col-head span {{ background:var(--track); color:var(--muted); padding:0 7px; font-size:11px; font-family:'Oswald',sans-serif; }}
+.card {{ background:var(--panel2); border:1px solid var(--line); padding:9px 10px; margin-bottom:8px; }}
+.card-id {{ font-size:10px; color:var(--muted); font-weight:700; margin-bottom:3px; font-family:'Oswald',sans-serif; letter-spacing:.04em; }}
+.card-title {{ font-size:12px; margin-bottom:6px; color:var(--ink); }}
+.tag {{ font-size:9px; padding:0 5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }}
+.tag-feature {{ background:rgba(95,211,138,.15); color:#5fd38a; }}
+.tag-bug {{ background:rgba(255,86,56,.16); color:#ff7a5e; }}
+.tag-chore {{ background:#262a33; color:var(--muted); }}
+.tag-video {{ background:rgba(70,200,200,.15); color:var(--cyan); }}
+.pbar {{ height:4px; background:var(--track); overflow:hidden; margin:5px 0; }}
+.pbar span {{ display:block; height:100%; }}
+.card-foot {{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); }}
+.due {{ color:var(--amber); font-family:'Oswald',sans-serif; }}
+.empty {{ color:#34383f; text-align:center; font-size:12px; padding:10px 0; }}
+.ms-row {{ display:grid; grid-template-columns:1.4fr 2fr 1.6fr; gap:14px; align-items:center; margin-bottom:12px; font-size:13px; }}
+.ms-name {{ font-weight:600; }}
+.ms-due {{ font-size:11px; color:var(--muted); font-weight:400; font-family:'Oswald',sans-serif; }}
+.ms-bar {{ height:8px; background:var(--track); overflow:hidden; clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%); }}
+.ms-bar span {{ display:block; height:100%; }}
+.ms-stat {{ font-size:12px; color:var(--muted); }}
+.two {{ display:grid; grid-template-columns:1.6fr 1fr; gap:16px; }}
+table {{ width:100%; border-collapse:collapse; font-size:13px; }}
+th, td {{ text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); }}
+th {{ color:var(--muted); font-weight:700; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }}
+td {{ font-family:'Oswald',sans-serif; color:var(--ink); }}
+.chart, .gantt {{ width:100%; height:auto; }}
+.feed-row {{ display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line); }}
+.feed-emoji {{ font-size:18px; }}
+.feed-line {{ font-size:12px; color:var(--ink); }}
+.feed-task {{ background:var(--track); color:var(--muted); padding:0 5px; font-size:10px; font-weight:700; font-family:'Oswald',sans-serif; }}
+.feed-detail {{ font-size:11px; color:var(--muted); }}
+.feed-ts {{ margin-left:auto; font-size:10px; color:#5b606b; white-space:nowrap; font-family:'Oswald',sans-serif; }}
+.legend {{ display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--muted); margin-top:8px; }}
+.legend i {{ display:inline-block; width:10px; height:10px; margin-right:4px; vertical-align:middle; }}
+footer {{ text-align:center; color:#4a4f59; font-size:10px; margin-top:24px; letter-spacing:.1em; text-transform:uppercase; font-family:'Oswald',sans-serif; }}
 .pf-header {{ align-items:center; }}
-.est-note {{ font-size:11px; color:#bbb; }}
+.est-note {{ font-size:11px; color:#5b606b; }}
 .pf-kpis {{ grid-template-columns:repeat(5,1fr); }}
 .pcards {{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }}
-.pcard {{ border:1px solid #ececec; border-radius:10px; padding:13px 14px; background:#fff; }}
+.pcard {{ border:1px solid var(--line); background:var(--panel2); padding:13px 14px;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%); }}
 .pcard-head {{ display:flex; justify-content:space-between; align-items:center; font-size:12px; }}
-.pcard-client {{ font-weight:700; color:#666; }}
+.pcard-client {{ font-weight:700; color:var(--ink); letter-spacing:.03em; }}
 .prio {{ font-size:11px; font-weight:700; }}
-.pcard-name {{ font-size:14px; font-weight:700; margin:6px 0; }}
-.stage-badge {{ font-size:10px; font-weight:700; padding:1px 8px; border-radius:9px; }}
-.pbar2 {{ height:7px; background:#f0ece8; border-radius:4px; overflow:hidden; margin:8px 0 3px; }}
+.pcard-name {{ font-size:14px; font-weight:700; margin:6px 0; color:var(--ink); }}
+.stage-badge {{ font-size:10px; font-weight:700; padding:1px 8px; text-transform:uppercase; letter-spacing:.05em; }}
+.pbar2 {{ height:6px; background:var(--track); overflow:hidden; margin:8px 0 3px; clip-path:polygon(0 0,100% 0,calc(100% - 5px) 100%,0 100%); }}
 .pbar2 span {{ display:block; height:100%; }}
-.pcard-pct {{ font-size:11px; color:#888; }}
-.est {{ color:#ccc; }}
-.pcard-dates {{ display:flex; justify-content:space-between; font-size:11px; color:#777; margin:7px 0; }}
-.pcard-week {{ font-size:12px; background:#faf8f6; border-radius:6px; padding:6px 8px; color:#555; }}
-.pcard-risk {{ font-size:11px; color:#c8553d; margin-top:6px; }}
-.pcard-foot {{ display:flex; justify-content:space-between; font-size:11px; color:#aaa; margin-top:8px; }}
-.pcard-foot a {{ color:var(--accent); text-decoration:none; font-weight:600; }}
-.oi {{ font-size:10px; font-weight:700; color:#b8860b; background:#fbf0d8; border-radius:9px; padding:1px 8px; margin-left:6px; }}
+.pcard-pct {{ font-size:11px; color:var(--muted); font-family:'Oswald',sans-serif; }}
+.est {{ color:#5b606b; }}
+.pcard-dates {{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin:7px 0; }}
+.pcard-week {{ font-size:12px; background:#0f1116; border:1px solid var(--line); padding:6px 8px; color:#b9bcc4; }}
+.pcard-risk {{ font-size:11px; color:#ff7a5e; margin-top:6px; }}
+.pcard-foot {{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:8px; }}
+.pcard-foot a {{ color:var(--accent); text-decoration:none; font-weight:700; }}
+.oi {{ font-size:10px; font-weight:700; color:var(--amber); background:rgba(245,196,81,.14); padding:1px 8px; margin-left:6px; }}
 .reminders {{ display:flex; flex-direction:column; gap:2px; }}
-.r-grp {{ font-size:11px; font-weight:700; color:#999; margin:12px 0 2px; }}
+.r-grp {{ font-size:11px; font-weight:700; color:var(--muted); margin:12px 0 2px; text-transform:uppercase; letter-spacing:.06em; }}
 .r-grp:first-child {{ margin-top:0; }}
-.r-type {{ font-size:9px; font-weight:700; padding:1px 6px; border-radius:7px; margin:0 2px; }}
-.r-row {{ display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #f5f5f5; }}
-.r-dot {{ width:9px; height:9px; border-radius:50%; background:#cbd2d8; flex:none; }}
-.r-dot.r-h {{ background:#c8553d; }}
-.r-body {{ flex:1; font-size:12.5px; }}
-.r-meta {{ font-size:10.5px; color:#aaa; }}
-.r-late {{ font-size:10px; font-weight:700; color:#fff; background:#c8553d; border-radius:8px; padding:2px 7px; white-space:nowrap; }}
-.r-soon {{ font-size:10px; font-weight:700; color:#b8860b; background:#fbf0d8; border-radius:8px; padding:2px 7px; white-space:nowrap; }}
-.r-ok {{ font-size:10px; color:#bbb; white-space:nowrap; }}
-.suggest {{ margin:0; padding-left:2px; list-style:none; }}
-.suggest li {{ font-size:12.5px; color:#555; padding:6px 0; border-bottom:1px dashed #f0f0f0; line-height:1.5; }}
+.r-type {{ font-size:9px; font-weight:700; padding:1px 6px; margin:0 2px; }}
+.r-row {{ display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }}
+.r-dot {{ width:9px; height:9px; flex:none; }}
+.r-body {{ flex:1; font-size:12.5px; color:var(--ink); }}
+.r-meta {{ font-size:10.5px; color:var(--muted); }}
+.r-late {{ font-size:10px; font-weight:700; color:#10110f; background:var(--accent); padding:2px 7px; white-space:nowrap; }}
+.r-soon {{ font-size:10px; font-weight:700; color:var(--amber); background:rgba(245,196,81,.14); padding:2px 7px; white-space:nowrap; }}
+.r-ok {{ font-size:10px; color:var(--muted); white-space:nowrap; font-family:'Oswald',sans-serif; }}
+.suggest {{ margin:0; padding-left:0; list-style:none; }}
+.suggest li {{ font-size:12.5px; color:#c2c5cd; padding:7px 0 7px 14px; border-bottom:1px solid var(--line); line-height:1.5; position:relative; }}
+.suggest li::before {{ content:""; position:absolute; left:0; top:13px; width:6px; height:6px; background:var(--accent); transform:skewX(-14deg); }}
 @media(max-width:820px){{
   .pf-kpis{{grid-template-columns:repeat(3,1fr)}} .pcards{{grid-template-columns:1fr}} .kpis{{grid-template-columns:repeat(3,1fr)}} .agents,.board{{grid-template-columns:repeat(2,1fr)}} .two{{grid-template-columns:1fr}} .ms-row{{grid-template-columns:1fr}} }}
 </style>
