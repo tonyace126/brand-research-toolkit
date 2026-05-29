@@ -1,0 +1,84 @@
+{
+  "agents": [
+    {
+      "id": "po",
+      "name": "需求分析師",
+      "role": "product-owner",
+      "emoji": "🧭",
+      "color": "#c8553d",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "釐清需求、定義驗收標準、維護 backlog 優先序"
+    },
+    {
+      "id": "planner",
+      "name": "專案規劃師",
+      "role": "planner",
+      "emoji": "🗺️",
+      "color": "#2f6f8f",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "拆解任務、估時、排里程碑與時程"
+    },
+    {
+      "id": "dev",
+      "name": "開發工程師",
+      "role": "developer",
+      "emoji": "💻",
+      "color": "#3c7a4d",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "實作功能、寫程式、自測"
+    },
+    {
+      "id": "reviewer",
+      "name": "程式審查員",
+      "role": "reviewer",
+      "emoji": "🔍",
+      "color": "#8a5fb0",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "審查程式碼、把關品質與一致性"
+    },
+    {
+      "id": "qa",
+      "name": "品質驗收員",
+      "role": "qa",
+      "emoji": "✅",
+      "color": "#b8860b",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "對照驗收標準驗證、回報缺陷、判定完成"
+    },
+    {
+      "id": "creative",
+      "name": "企劃",
+      "role": "creative-planner",
+      "emoji": "📝",
+      "color": "#e9a13b",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "影片主題發想、腳本與分鏡、定調內容方向"
+    },
+    {
+      "id": "director",
+      "name": "導演",
+      "role": "director",
+      "emoji": "🎬",
+      "color": "#d1495b",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "統籌拍攝、執行分鏡、把關調性、後製審片"
+    },
+    {
+      "id": "editor",
+      "name": "剪輯",
+      "role": "editor",
+      "emoji": "✂️",
+      "color": "#00798c",
+      "status": "idle",
+      "current_task": null,
+      "responsibility": "後製剪輯、配樂字幕、調色、輸出成片"
+    }
+  ]
+}

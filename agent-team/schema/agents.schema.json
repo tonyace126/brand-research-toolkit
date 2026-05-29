@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "agents",
+  "type": "object",
+  "required": ["agents"],
+  "properties": {
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "role", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "role": { "enum": ["product-owner", "planner", "developer", "reviewer", "qa", "creative-planner", "director", "editor"] },
+          "emoji": { "type": "string" },
+          "color": { "type": "string" },
+          "status": { "enum": ["idle", "active", "blocked"] },
+          "current_task": { "type": ["string", "null"] },
+          "responsibility": { "type": "string" }
+        }
+      }
+    }
+  }
+}

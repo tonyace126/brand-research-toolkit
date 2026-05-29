@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "activity (JSONL — 每行一個事件)",
+  "type": "object",
+  "required": ["ts", "agent", "action"],
+  "properties": {
+    "ts": { "type": "string", "format": "date-time", "description": "ISO 8601 含時區" },
+    "agent": { "type": "string", "description": "agents.json 的 agent id" },
+    "task": { "type": ["string", "null"], "description": "關聯任務 id（可空）" },
+    "action": {
+      "type": "string",
+      "description": "事件動作",
+      "examples": ["created", "planned", "started", "progress", "submitted", "reviewing", "reviewed", "verified", "completed", "blocked", "note"]
+    },
+    "detail": { "type": "string" }
+  }
+}

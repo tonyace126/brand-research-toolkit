@@ -193,18 +193,6 @@ GitHub Pages 部署有 1-2 分鐘延遲，先等等。超過 5 分鐘還 404 就
 - 研究結果直出 PDF（給不愛點連結的客戶）
 - 增量更新模式（同主題每週重跑、自動 diff 新增話題）
 
-## See also（互補專案）
-
-這個 toolkit 走「對話觸發、一次性、產報告」路線。如果你的需求是另一個方向，這些開源專案值得參考：
-
-| 專案 | 定位 | 跟本 toolkit 的差異 |
-|---|---|---|
-| [AEO Radar](https://github.com/hellowalt/aeo-radar) | AI 引擎（ChatGPT 等）每日自動監測，SQLite 累積歷史 + Next.js 儀表板看趨勢 | 排程持續跑 vs 本 toolkit 是對話觸發一次性 |
-
-本 toolkit 已在 `skills/brand-issue-research/references/platforms/ai-engines.md` 提供 AI 引擎「一次性研究」的做法（使用者手動跑 + 貼回對話）。需要長期追蹤趨勢、自動化監測就走 AEO Radar；只想單次盤點品牌在 AI 答案中怎麼出現，本 skill 即可。
-
-兩者不互斥，可以併用。
-
 ## License
 
 MIT © 2026 Tony Wang — 詳見 [LICENSE](./LICENSE)。

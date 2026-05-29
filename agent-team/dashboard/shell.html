@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小蜜蜂">
+<title>🐝 小蜜蜂 · 啟動器</title>
+<style>
+  :root { --accent:#c8553d; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:#f7f5f3; color:#222; padding:24px; }
+  .card { background:#fff; border:1px solid #ececec; border-radius:16px; padding:28px 24px;
+    max-width:420px; width:100%; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,.05); }
+  .logo { font-size:46px; }
+  h1 { font-size:20px; margin:8px 0 4px; }
+  .sub { color:#999; font-size:13px; margin-bottom:20px; }
+  .status { font-size:14px; margin:16px 0; min-height:22px; }
+  .spinner { width:26px; height:26px; border:3px solid #eee; border-top-color:var(--accent);
+    border-radius:50%; animation:spin .8s linear infinite; margin:8px auto; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .banner { display:none; background:#fae8e4; color:#c8553d; border:1px solid #e9b8ad;
+    border-radius:12px; padding:14px; font-size:14px; font-weight:600; margin:14px 0; }
+  button { background:var(--accent); color:#fff; border:none; border-radius:10px;
+    padding:12px 18px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;
+    width:100%; margin-top:8px; }
+  button.ghost { background:#fff; color:#888; border:1px solid #e4ded8; }
+  .settings { display:none; text-align:left; margin-top:16px; }
+  label { font-size:12px; color:#888; display:block; margin:10px 0 4px; }
+  input { width:100%; padding:11px; border:1px solid #e4ded8; border-radius:9px;
+    font-size:14px; font-family:inherit; }
+  .gear { margin-top:14px; font-size:12px; color:#bbb; background:none; border:none; width:auto; cursor:pointer; }
+  .hint { font-size:11px; color:#bbb; margin-top:10px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🐝</div>
+  <h1>小蜜蜂 · 專案總覽</h1>
+  <div class="sub">正在連線到你的同步終端…</div>
+
+  <div id="loading"><div class="spinner"></div><div class="status" id="status">檢查連線中…</div></div>
+
+  <div class="banner" id="banner">⚠️ 終端機未連線！<br>請確認電腦已開機、且同步服務（serve.py）有啟動。</div>
+
+  <button id="retry" style="display:none" onclick="boot()">↻ 重試連線</button>
+  <button class="gear" onclick="toggleSettings()">⚙︎ 設定終端網址</button>
+
+  <div class="settings" id="settings">
+    <label>後端網址（cloudflared / 區網 IP）</label>
+    <input id="backend" placeholder="https://xxxx.trycloudflare.com">
+    <label>存取 Token</label>
+    <input id="token" placeholder="你在 serve.py 設定的 AGENT_TEAM_TOKEN">
+    <button onclick="save()">儲存並連線</button>
+    <div class="hint">設定只存在這支手機（localStorage），不會上傳。</div>
+  </div>
+</div>
+
+<script>
+var LS_B = "at_backend", LS_T = "at_token";
+function $(id){ return document.getElementById(id); }
+function getCfg(){ return { b:(localStorage.getItem(LS_B)||"").replace(/\/+$/,""), t:localStorage.getItem(LS_T)||"" }; }
+function toggleSettings(){ var s=$("settings"); s.style.display = s.style.display==="block"?"none":"block"; }
+function offline(msg){
+  $("loading").style.display="none";
+  $("banner").style.display="block";
+  if(msg){ $("banner").innerHTML="⚠️ "+msg; }
+  $("retry").style.display="block";
+}
+function save(){
+  localStorage.setItem(LS_B, $("backend").value.trim());
+  localStorage.setItem(LS_T, $("token").value.trim());
+  $("settings").style.display="none";
+  boot();
+}
+async function boot(){
+  var c = getCfg();
+  $("retry").style.display="none";
+  $("banner").style.display="none";
+  if(!c.b){
+    $("loading").style.display="none";
+    $("settings").style.display="block";
+    $("status").textContent="";
+    return;
+  }
+  $("loading").style.display="block";
+  $("status").textContent="檢查連線中…";
+  try{
+    var ctrl=new AbortController();
+    var to=setTimeout(function(){ ctrl.abort(); }, 4500);
+    var url = c.b + "/api/health" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
+    var r = await fetch(url, { signal:ctrl.signal, cache:"no-store" });
+    clearTimeout(to);
+    if(r.status===401){ offline("Token 不正確，請到設定修正。"); return; }
+    if(!r.ok) throw 0;
+    $("status").textContent="已連線，載入中…";
+    location.href = c.b + "/" + (c.t ? "?token="+encodeURIComponent(c.t) : "");
+  }catch(e){
+    offline();
+  }
+}
+// 預填設定欄位
+(function(){ var c=getCfg(); if($("backend")) $("backend").value=c.b; if($("token")) $("token").value=c.t; })();
+boot();
+</script>
+</body>
+</html>

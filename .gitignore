@@ -5,7 +5,12 @@ node_modules/
 .env
 .env.local
 _setup-test.html
-.claude/
+.claude/*
+!.claude/agents/
 .claude/settings.local.json
 .vscode/
 .idea/
+
+# 客戶實際資料（Notion 快照）與產生的 dashboard — 不進版控，避免外洩
+agent-team/data/portfolio.json
+agent-team/dashboard/index.html
