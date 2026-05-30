@@ -178,6 +178,7 @@ export default function RhodesCommand({ data = RHODES_DATA }: { data?: RhodesDat
         overdueCount={data.stats.overdue}
         readiness={data.stats.readiness}
         syncDate={data.syncDate}
+        figureSrc="/kaltsit.png"
       />
       <div className="shell">
         <div className="hero">
