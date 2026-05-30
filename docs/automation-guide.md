@@ -1,7 +1,7 @@
 # 自動化使用說明
 
-> 這份文件獨立於主 README，專門說明「研究完成後的自動化」這一塊。
-> 三個部件**彼此獨立**，可分開啟用、分開停用，互不影響。
+> 這份文件獨立於主 README，專門說明「自動化」這一塊。
+> 各部件**彼此獨立**，可分開啟用、分開停用，互不影響。
 
 evaluate 一個外部工具能不能裝、再把最安全的一塊接進來 —— 這份就是接進來的成果。
 
@@ -12,6 +12,7 @@ evaluate 一個外部工具能不能裝、再把最安全的一塊接進來 —�
 | 🔔 Slack 完成通知 | 發布電子報時，自動播報到 Slack 頻道 | 填 `.env` | 不發（dry-run） |
 | 🔍 Notion 研究知識庫歸檔 | 發布電子報時，自動把研究存成可查詢紀錄 | 設定檔加一欄 | 不歸檔（無動作） |
 | 🧭 `repo-install-eval` skill | 評估外部連結能不能安裝 | 說「評估這個連結」 | — |
+| 🔄 `project-progress-sync` skill | GitLab+Slack 進度核對分類後同步到 Notion 追蹤事項庫 | 填 `.env` + `project-map.json` | 不動（要你開口+確認）|
 
 **設計鐵律**：三者都是**選用、預設無動作**。沒設定就完全無感，不影響公開 plugin 行為。
 觸發分層 —— 自動層只放「安全、可逆、不需確認」的通知/歸檔；發信、改 CRM 這類有後果的動作永遠不進自動層。
@@ -88,6 +89,34 @@ echo '{"summary":"測試","url":"https://..."}' | python3 notify.py
 2. **架構建議**：模組分開、觸發分三層。
 3. **資源評估**：token、記憶體、維護腐化、scope 污染等坑。
 4. **建議 + 最小安全原型**：過關才動手，先做最小、最安全的一塊驗證。
+
+---
+
+## 🔄 部件四：project-progress-sync skill
+
+**位置**：`skills/project-progress-sync/`（handler 在 `prototype/gitlab-sync/`）
+
+把工程端(GitLab)＋討論端(Slack)的進度，核對、分類後同步到 Notion「追蹤事項庫」。
+
+### 怎麼運作
+```
+你說「更新法皇進度 / 抓 UI 階段」
+  → 對 project-map.json 找專案（找不到就問你「連最近 code 還是新增」）
+  → gitlab_issues.py 唯讀抓 issue（state/label/assignee/milestone）
+  →（選用）讀 Slack 補脈絡
+  → 分類（closed→已完成、label 含進行中→進行中、其餘→待執行）+ 查重
+  → 產出 diff 提議
+  → 你確認 → 才寫進追蹤事項庫（關聯到全客戶專案總表大頭）
+```
+
+### 啟用
+1. `prototype/gitlab-sync/.env`：`GITLAB_BASE_URL` + `GITLAB_TOKEN`（唯讀 `read_api`）
+2. `prototype/gitlab-sync/project-map.json`：對應關係（從 `.example.json` 複製後填真實值）
+
+### 設計原則
+- GitLab **唯讀**；寫 Notion 前**一定**先給你看 diff 確認；不確定的 code **問你**不亂建。
+- 顆粒度 issue 層、按階段分組，看得出「現在在哪、下一階段是什麼」。
+- ⚠️ GitLab API 因雲端 allowlist，通常在**本機** Claude Code 跑。
 
 ---
 

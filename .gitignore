@@ -15,6 +15,9 @@ _setup-test.html
 agent-team/data/portfolio.json
 agent-team/dashboard/index.html
 
+# 專案進度同步的真實對應表（含內部頻道/專案 ID）— 不進版控
+prototype/gitlab-sync/project-map.json
+
 # Python 編譯快取
 __pycache__/
 *.pyc
