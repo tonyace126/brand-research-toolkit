@@ -1,0 +1,17 @@
+{
+  "_comment": "複製成 project-map.json（已 gitignore）並填入你的真實值。這是『近期記憶』：把 Slack 頻道 / GitLab 專案 / Notion 大頭 的對應關係記住。新 code 進來時 skill 會問你『連最近的還是新增』，確認後追加一筆。",
+  "gitlab_base_url": "https://gitlab.example.com",
+  "notion_tracking_data_source_id": "<追蹤事項庫的 data source id>",
+  "projects": [
+    {
+      "client": "客戶名（對應追蹤事項庫的『客戶』選項）",
+      "slack_channel": "頻道名稱",
+      "slack_channel_id": "Cxxxxxxxx",
+      "gitlab_project_path": "Group/your-project",
+      "gitlab_code": "工程端 code（如 MTLRxxx_MTLRxxx）",
+      "notion_project_code": "業務端 code（如 MTLRxxx）",
+      "notion_project_page_id": "<全客戶專案總表該筆的 page id>",
+      "default_type": "主動追蹤"
+    }
+  ]
+}
