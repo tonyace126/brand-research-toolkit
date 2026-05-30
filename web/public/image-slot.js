@@ -58,6 +58,12 @@
   // go still — better to reject than surprise.
   const ACCEPT = ['image/png', 'image/jpeg', 'image/webp', 'image/avif'];
 
+  // Vercel 等沒有 window.omelette 的環境 → 用 localStorage 持久化（同一裝置/瀏覽器）。
+  const HAS_LS = (() => {
+    try { localStorage.setItem('__is_probe__', '1'); localStorage.removeItem('__is_probe__'); return true; }
+    catch { return false; }
+  })();
+
   // ── Shared sidecar store ────────────────────────────────────────────────
   // One fetch + immediate write-on-change for every <image-slot> on the
   // page. Reads via fetch() so viewing works anywhere the HTML and sidecar
@@ -77,6 +83,8 @@
     loadP = fetch(STATE_FILE)
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
+        // 沒有 sidecar（例如 Vercel）→ 退回讀 localStorage。
+        if (!j && HAS_LS) { try { j = JSON.parse(localStorage.getItem(STATE_FILE) || 'null'); } catch { j = null; } }
         // Merge: sidecar loses to any in-memory change that raced ahead of
         // the fetch (drop or clear) so neither is clobbered by hydration.
         if (j && typeof j === 'object') {
@@ -108,7 +116,11 @@
   function save() {
     if (saving) { saveDirty = true; return; }
     const w = window.omelette && window.omelette.writeFile;
-    if (!w) return;
+    if (!w) {
+      // 沒有 omelette bridge（例如 Vercel）→ 存 localStorage。
+      if (HAS_LS) { try { localStorage.setItem(STATE_FILE, JSON.stringify(slots)); } catch {} }
+      return;
+    }
     saving = true;
     Promise.resolve(w(STATE_FILE, JSON.stringify(slots)))
       .catch(() => {})
@@ -592,7 +604,7 @@
       this._ring.style.display = mask ? 'none' : '';
 
       // Controls and reframe entry gate on this so share links stay read-only.
-      const editable = !!(window.omelette && window.omelette.writeFile);
+      const editable = !!(window.omelette && window.omelette.writeFile) || HAS_LS;
       this.toggleAttribute('data-editable', editable);
       this._sub.style.display = editable ? '' : 'none';
 
