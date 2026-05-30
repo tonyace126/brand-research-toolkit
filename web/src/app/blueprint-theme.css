@@ -1,0 +1,129 @@
+/* =====================================================================
+   羅德島總控 // blueprint-theme.css  —  v3 亮白技術藍圖主題
+   疊在 rhodes-command.css 之上；用 <html data-theme="blueprint"> 啟用。
+   不啟用時即原暗色（先鋒）主題，互不影響。
+   依賴：rhodes-command.css 的 class、image-slot.js。
+   ===================================================================== */
+
+/* ① 顏色 token 覆寫 */
+[data-theme="blueprint"] {
+  --bg: #E9ECEE;
+  --color-ink: #16191D;
+  --color-muted: #6A7178;
+  --color-line: #B4BBC2;
+  --color-surface: #FCFDFD;
+  --color-accent: #FF4D17;
+  --color-accent-soft: rgba(255,77,23,.12);
+  --color-cyan: #1FA7D8;
+  --color-cyan-soft: rgba(31,167,216,.12);
+  --color-danger: #E5392E;
+  --glow-accent: 0 0 0 1px rgba(255,77,23,.4), 0 6px 18px -8px rgba(255,77,23,.4);
+  color: var(--color-ink);
+}
+
+/* ② 背景：紶/粗方格 + 紙張漸層 */
+[data-theme="blueprint"] .hud-bg::before {
+  background:
+    linear-gradient(rgba(22,25,29,.045) 1px, transparent 1px) 0 0 / 100% 38px,
+    linear-gradient(90deg, rgba(22,25,29,.045) 1px, transparent 1px) 0 0 / 38px 100%,
+    linear-gradient(rgba(22,25,29,.07) 1px, transparent 1px) 0 0 / 100% 190px,
+    linear-gradient(90deg, rgba(22,25,29,.07) 1px, transparent 1px) 0 0 / 190px 100%,
+    linear-gradient(160deg, #EEF1F2, #E2E6E8 60%, #D9DEE1);
+  -webkit-mask: none; mask: none; opacity: 1;
+}
+/* 六角網格 + 技術路徑線 + 警示三角 + 區段璎字（SVG） */
+[data-theme="blueprint"] .hud-bg::after {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='78' height='68' viewBox='0 0 78 68'%3E%3Cg fill='none' stroke='%2316191d' stroke-opacity='.04' stroke-width='1'%3E%3Cpath d='M19.5 1 L39 12 L39 34 L19.5 45 L0 34 L0 12 Z'/%3E%3Cpath d='M58.5 1 L78 12 L78 34 L58.5 45 L39 34 L39 12 Z'/%3E%3Cpath d='M39 34 L58.5 45 L58.5 67 L39 78 L19.5 67 L19.5 45 Z'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cg fill='none' stroke='%231FA7D8' stroke-opacity='.07' stroke-width='1'%3E%3Cpath d='M-20 150 H210 L250 110 H620'/%3E%3Cpath d='M-20 360 H160 L200 400 H430 L470 360 H620'/%3E%3Cpath d='M250 110 V330'/%3E%3Cpath stroke-dasharray='3 5' d='M470 360 V560'/%3E%3C/g%3E%3Cg fill='%231FA7D8' fill-opacity='.16'%3E%3Ccircle cx='250' cy='110' r='2.5'/%3E%3Ccircle cx='200' cy='400' r='2.5'/%3E%3Ccircle cx='470' cy='360' r='2.5'/%3E%3C/g%3E%3Cg fill='%23FF4D17' fill-opacity='.2'%3E%3Cpath d='M120 230 l4 7 h-8 z'/%3E%3Cpath d='M520 180 l4 7 h-8 z'/%3E%3Cpath d='M360 500 l4 7 h-8 z'/%3E%3Cpath d='M80 480 l4 7 h-8 z'/%3E%3Cpath d='M560 440 l4 7 h-8 z'/%3E%3C/g%3E%3Cg fill='none' stroke='%2316191d' stroke-opacity='.05'%3E%3Crect x='248' y='108' width='4' height='4'/%3E%3Crect x='468' y='358' width='4' height='4'/%3E%3Crect x='40' y='40' width='6' height='6'/%3E%3C/g%3E%3Cg fill='%2316191d' fill-opacity='.05' font-family='monospace' font-size='9'%3E%3Ctext x='44' y='150'%3ESEC-A%3C/text%3E%3Ctext x='430' y='250'%3ESEC-B%3C/text%3E%3C/g%3E%3C/svg%3E");
+  background-size: 78px 68px, 600px 600px;
+  background-repeat: repeat, repeat;
+  -webkit-mask: radial-gradient(135% 110% at 50% 35%, #000 60%, transparent 100%);
+          mask: radial-gradient(135% 110% at 50% 35%, #000 60%, transparent 100%);
+  opacity: 1;
+}
+/* 紙張顆粒 + 四角暈影（掛在 .hud-bg 上，z-index 0 不擋互動） */
+[data-theme="blueprint"] .hud-bg > .bp-grain { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .045; mix-blend-mode: multiply; }
+[data-theme="blueprint"] .hud-bg::after { }
+[data-theme="blueprint"] .shell { position: relative; z-index: 1; }
+[data-theme="blueprint"] .shell::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(120% 95% at 50% 30%, transparent 58%, rgba(40,50,60,.16) 100%); }
+
+/* ③ 浮水印字（深色描邊） */
+[data-theme="blueprint"] .ghost-title { font-size: clamp(110px, 18vw, 280px); color: rgba(22,25,29,.02); -webkit-text-stroke: 1px rgba(22,25,29,.06); }
+
+
+/* ④ 面板：白底、實線細框、柔陰影 */
+[data-theme="blueprint"] .panel { background: var(--color-surface); border-color: #BCC3CA; box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 12px 26px -18px rgba(30,40,50,.4); }
+[data-theme="blueprint"] .panel.cut { background: #AEB6BE; }
+[data-theme="blueprint"] .panel.cut::before { background: var(--color-surface); }
+[data-theme="blueprint"] .panel.hud { --bracket: rgba(22,25,29,.32); }
+[data-theme="blueprint"] .ostate, [data-theme="blueprint"] .task { border-color: #D2D7DC; }
+
+/* ⑤ 控制項：白底覆膜 + 橘底白字 */
+[data-theme="blueprint"] .seg button[aria-selected="true"] { color: #fff; }
+[data-theme="blueprint"] .btn.primary { color: #fff; }
+[data-theme="blueprint"] .tag { background: rgba(22,25,29,.05); }
+[data-theme="blueprint"] .tag.active { color: var(--color-accent); background: var(--color-accent-soft); }
+[data-theme="blueprint"] .btn { background: rgba(22,25,29,.04); }
+[data-theme="blueprint"] .btn.ghost { background: transparent; }
+[data-theme="blueprint"] .seg { background: rgba(22,25,29,.04); }
+[data-theme="blueprint"] .seg button:not([aria-selected="true"]):hover { background: rgba(22,25,29,.06); color: var(--color-ink); }
+[data-theme="blueprint"] .bar { background: rgba(22,25,29,.08); }
+[data-theme="blueprint"] .ring .dial { background: conic-gradient(var(--color-accent) calc(var(--p,40) * 1%), rgba(22,25,29,.1) 0); }
+[data-theme="blueprint"] .ring .val b { color: var(--color-ink); }
+[data-theme="blueprint"] .pin { background: rgba(22,25,29,.035); }
+[data-theme="blueprint"] .sheen::before { background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); }
+
+/* ⑥ 標題系統：eyebrow 灰、slash 橘、廣播點橘＋灰光暈 */
+[data-theme="blueprint"] .eyebrow { color: var(--color-muted); }
+[data-theme="blueprint"] .slash { color: var(--color-accent); text-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 35%, transparent); }
+[data-theme="blueprint"] .live-dot { background: var(--color-accent); animation: pulseGray 1.8s infinite; }
+@keyframes pulseGray { 0% { box-shadow: 0 0 0 0 rgba(154,161,168,.5); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+/* 區段標題 → tape 黑底白字 + 橘紅 ▲ */
+[data-theme="blueprint"] .sec-head { align-items: center; gap: 0; }
+[data-theme="blueprint"] .sec-head .bar { width: 0; height: 0; margin: 0; }
+[data-theme="blueprint"] .sec-head h2 { background: var(--color-ink); color: #fff; padding: 6px 13px; letter-spacing: .04em;
+  clip-path: polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%); }
+[data-theme="blueprint"] .sec-head .en { margin-left: 12px; }
+[data-theme="blueprint"] .sec-head .en::before { content: "▲ "; color: var(--color-accent); }
+
+/* ⑦ 卡片 hover：白底標題改橘紅(不可變白） */
+[data-theme="blueprint"] .pcard.ix:hover h3 { color: var(--color-accent); }
+
+/* ⑧ 幹員卡：剪影未 hover 亮透、hover 壓深；系統性小元素 */
+[data-theme="blueprint"] .opcard .opfig[data-filled] { opacity: .62; -webkit-mask: linear-gradient(90deg, transparent 0, #000 46%); mask: linear-gradient(90deg, transparent 0, #000 46%); }
+[data-theme="blueprint"] .opcard .opfig[data-filled]::part(image) { filter: grayscale(.7) brightness(1.12) contrast(.96); }
+[data-theme="blueprint"] .opcard.ix:hover .opfig[data-filled] { opacity: .95; }
+[data-theme="blueprint"] .opcard.ix:hover .opfig[data-filled]::part(image) { filter: grayscale(.35) brightness(.92) contrast(1.05); }
+[data-theme="blueprint"] .opcard::before { content: "◣"; position: absolute; left: 8px; top: 6px; z-index: 3; font-size: 8px; color: rgba(22,25,29,.28); }
+[data-theme="blueprint"] .opcard .opcode { position: absolute; right: 12px; top: 11px; z-index: 3; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; color: var(--color-cyan); opacity: .7; }
+[data-theme="blueprint"] .opcard .opscan { position: absolute; left: 0; right: 0; bottom: 52px; z-index: 1; height: 1px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, rgba(22,25,29,.16) 0 4px, transparent 4px 9px); opacity: .5; }
+
+/* ⑨ 全息簡報開場 · 藍圖版（人白投影室） */
+[data-theme="blueprint"] .holo { background: radial-gradient(125% 95% at 50% 28%, rgba(238,241,242,.93), rgba(214,220,224,.97) 72%); backdrop-filter: blur(4px); }
+[data-theme="blueprint"] .holo-grid { opacity: .6;
+  background:
+    linear-gradient(rgba(22,25,29,.06) 1px, transparent 1px) 0 0 / 100% 34px,
+    linear-gradient(90deg, rgba(22,25,29,.06) 1px, transparent 1px) 0 0 / 34px 100%; }
+[data-theme="blueprint"] .holo-slot { filter: saturate(.5) brightness(.7) contrast(1.1) drop-shadow(0 0 18px color-mix(in srgb, var(--color-cyan) 50%, transparent)); }
+[data-theme="blueprint"] .holo-figure::after { mix-blend-mode: multiply; opacity: .5;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-cyan) 18%, transparent), transparent 40%, color-mix(in srgb, var(--color-accent) 12%, transparent)),
+    repeating-linear-gradient(0deg, rgba(20,40,55,.10) 0 2px, transparent 2px 4px); }
+[data-theme="blueprint"] .holo-name { color: var(--color-cyan); }
+[data-theme="blueprint"] .holo-line { color: var(--color-ink); text-shadow: none; }
+[data-theme="blueprint"] .holo-line .caret { background: var(--color-accent); }
+[data-theme="blueprint"] .holo-line b { color: var(--color-accent); }
+[data-theme="blueprint"] .holo-dots i { background: rgba(22,25,29,.18); }
+[data-theme="blueprint"] .holo-dots i.on { background: var(--color-accent); box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 60%, transparent); }
+[data-theme="blueprint"] .holo-replay { color: var(--color-accent); background: rgba(255,255,255,.78); border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-line)); }
+[data-theme="blueprint"] .holo-replay:hover { background: var(--color-accent-soft); color: var(--color-ink); }
+[data-theme="blueprint"] .holo-slot::part(empty) { color: var(--color-cyan); }
+[data-theme="blueprint"] .holo-actions .btn { color: var(--color-ink); background: rgba(255,255,255,.7); border-color: var(--color-line); }
+[data-theme="blueprint"] .holo-actions .btn.ghost { background: transparent; }
+[data-theme="blueprint"] .holo-actions .btn.primary { color: #fff; background: var(--color-accent); border-color: transparent; box-shadow: 0 6px 16px -6px rgba(255,77,23,.6); }

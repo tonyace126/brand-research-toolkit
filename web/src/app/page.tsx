@@ -1,6 +1,6 @@
-import CommandCenter from "@/components/command/CommandCenter";
-import { RC_DATA } from "@/components/command/data";
-import type { CommandData, Project as RcProject, TaskItem } from "@/components/command/data";
+import RhodesCommand from "@/components/command/RhodesCommand";
+import { RHODES_DATA } from "@/components/command/data";
+import type { RhodesData, ProjectItem, TaskItem } from "@/components/command/data";
 import { getPortfolio } from "@/lib/notion";
 import type { Portfolio, Project, Reminder } from "@/lib/types";
 
@@ -9,8 +9,7 @@ export const dynamic = "force-dynamic";
 
 const DAY = 86_400_000;
 
-/* 凱爾希口吻每日問候（原創台詞，稱呼「東尼大木博士」）。
-   依當年第幾天輪替，每天進來都不一樣。 */
+/* 凱爾希口吻每日問候（原創台詞，稱呼「東尼大木博士」）。依當年第幾天輪替。 */
 const FLAVORS = [
   "別皺眉，東尼大木博士。情勢仍在掌控之中——確認過，就繼續前進。",
   "醒著就好好用腦，東尼大木博士。今天的羅德島，交給你下判斷。",
@@ -40,7 +39,6 @@ function daysUntil(due: string, todayMs: number): number {
   return Math.round((d - todayMs) / DAY);
 }
 
-/** 期限的人類可讀字串 */
 function dueLabel(due: string, n: number): string {
   if (!Number.isFinite(n)) return due;
   if (n < 0) return `逾期 ${Math.abs(n)} 天`;
@@ -52,13 +50,12 @@ function reminderMeta(r: Reminder): string {
   return [r.project, r.client, r.type].filter(Boolean).join(" · ");
 }
 
-/** Portfolio（Notion）→ CommandData（元件） */
-function toCommand(pf: Portfolio): CommandData {
-  // pf.today 為 "YYYY-MM-DD"（UTC 午夜）；非 live 時可能是 "—"，退回今日
+/** Portfolio（Notion）→ RhodesData（元件） */
+function toRhodes(pf: Portfolio): RhodesData {
   const parsed = Date.parse(pf.today);
   const base = Number.isNaN(parsed) ? Date.now() : parsed;
 
-  const projects: RcProject[] = pf.projects.map((p) => ({
+  const projects: ProjectItem[] = pf.projects.map((p) => ({
     code: p.code,
     client: p.client || "—",
     tag: tagOf(p),
@@ -71,7 +68,6 @@ function toCommand(pf: Portfolio): CommandData {
     pin: p.risk && p.risk !== "—" ? p.risk : p.thisWeek && p.thisWeek !== "—" ? p.thisWeek : "—",
   }));
 
-  // 任務：依截止日分群（≤7 天含逾期 / 之後）
   const within7: TaskItem[] = [];
   const later: TaskItem[] = [];
   let overdue = 0;
@@ -96,13 +92,9 @@ function toCommand(pf: Portfolio): CommandData {
     : 0;
 
   const advisory: string[] = [];
-  if (overdue > 0)
-    advisory.push(`有 ${overdue} 個項目已逾期，建議優先處理或與對方重新議定期限。`);
-  if (due7 > 0)
-    advisory.push(`有 ${due7} 個任務在 7 天內到期，先確認排程與交付。`);
-  advisory.push(
-    `${active} 個專案同時進行中，把當週交付拆成任務逐一推進——對幹員下令即可調度。`,
-  );
+  if (overdue > 0) advisory.push(`有 ${overdue} 個項目已逾期，建議優先處理或與對方重新議定期限。`);
+  if (due7 > 0) advisory.push(`有 ${due7} 個任務在 7 天內到期，先確認排程與交付。`);
+  advisory.push(`${active} 個專案同時進行中，把當週交付拆成任務逐一推進——對幹員下令即可調度。`);
 
   return {
     syncDate: pf.syncedAt,
@@ -112,13 +104,12 @@ function toCommand(pf: Portfolio): CommandData {
     projects,
     tasks: { within7, later },
     advisory,
-    // 幹員編制為固定設定，沿用設計稿
-    operators: RC_DATA.operators,
-    operatorFlow: RC_DATA.operatorFlow,
+    operators: RHODES_DATA.operators,
+    operatorFlow: RHODES_DATA.operatorFlow,
   };
 }
 
 export default async function Page() {
   const pf = await getPortfolio();
-  return <CommandCenter data={toCommand(pf)} />;
+  return <RhodesCommand data={toRhodes(pf)} />;
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "./ci-core.css";
+import "./blueprint-theme.css";
 
 export const metadata: Metadata = {
   title: "羅德島總控",
