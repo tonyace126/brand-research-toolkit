@@ -57,7 +57,7 @@ function Ring({ pct, color = "#2b6fff", size = 132 }: { pct: number; color?: str
   }, [c, pct]);
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#eef0f4" strokeWidth={9} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#262a31" strokeWidth={9} />
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -71,7 +71,7 @@ function Ring({ pct, color = "#2b6fff", size = 132 }: { pct: number; color?: str
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
         style={{ transition: "stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)" }}
       />
-      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="#14161c">
+      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700" fill="#e9ebef">
         {pct}%
       </text>
     </svg>
@@ -130,7 +130,7 @@ function ProjectCard({ p, today }: { p: Project; today: Date }) {
           <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-bold text-accent">未結 {p.openItems}</span>
         )}
       </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#eef0f4]">
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
         <motion.div
           className="h-full rounded-full"
           style={{ background: sc }}
@@ -145,7 +145,7 @@ function ProjectCard({ p, today }: { p: Project; today: Date }) {
         <span>下個關鍵 {dueNode}</span>
         <span>上線 {p.launch ?? "—"}</span>
       </div>
-      <div className="mt-2 rounded-lg bg-[#f7f8fb] px-2.5 py-1.5 text-xs text-ink/70">📌 {p.thisWeek}</div>
+      <div className="mt-2 rounded-lg bg-white/[0.04] px-2.5 py-1.5 text-xs text-ink/70">📌 {p.thisWeek}</div>
       {p.risk && p.risk !== "—" && <div className="mt-1.5 text-[11px] text-red-500">⚠️ {p.risk}</div>}
       <div className="mt-2 flex justify-between text-[11px] text-muted">
         <span />
@@ -213,7 +213,7 @@ export default function Dashboard({ data, agents }: { data: Portfolio; agents: A
 
       {/* tabs */}
       <div className="mb-6 inline-flex rounded-full border border-line bg-surface p-1 shadow-sm">
-        {([["portfolio", "📊 專案總覽"], ["team", "🐝 代理團隊"]] as const).map(([key, label]) => (
+        {([["portfolio", "📊 作戰總覽"], ["team", "🛡️ 菁英幹員"]] as const).map(([key, label]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -284,12 +284,12 @@ export default function Dashboard({ data, agents }: { data: Portfolio; agents: A
                     </div>
                   </div>
                   <div className={`mt-3 text-xs font-semibold ${a.status === "active" ? "text-accent" : "text-muted"}`}>
-                    {a.status === "active" ? "● 工作中" : "○ 待命"}
+                    {a.status === "active" ? "● 作戰中" : "○ 待命"}
                   </div>
                 </motion.div>
               ))}
             </div>
-            <p className="mt-4 text-sm text-muted">代理團隊框架：需求 → 規劃 → 開發 → 審查 → 驗收（＋企劃 → 導演 → 剪輯）。對 Claude 說「我想加一個功能…」或「我要做一支影片…」即可開跑。</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted">菁英幹員編制：需求 → 規劃 → 開發 → 審查 → 驗收（＋企劃 → 導演 → 剪輯）。博士，下達指令即可調度幹員——說「我要加一個功能…」或「我要做一支影片…」，幹員就位。</p>
           </motion.div>
         )}
       </AnimatePresence>

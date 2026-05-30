@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-accent: #2b6fff;
-  --color-accent-soft: #e8f0ff;
-  --color-ink: #14161c;
-  --color-muted: #6b7280;
-  --color-line: #e7e8ee;
-  --color-surface: #ffffff;
-  --radius: 1rem;
+  --color-accent: #19a7e0;
+  --color-accent-soft: #0e2a3a;
+  --color-ink: #e9ebef;
+  --color-muted: #969ba6;
+  --color-line: #282c34;
+  --color-surface: #15171c;
+  --color-danger: #ff4d4f;
+  --radius: 0.75rem;
 }
 
 :root {
-  --bg: #f7f8fb;
+  --bg: #0c0d11;
 }
 
 html,
@@ -28,10 +29,10 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
-/* ---------- 動態網格背景（游標揭示 + 移動漸層） ---------- */
+/* ---------- 動態網格背景（暗色 · 游標揭示 + 移動漸層） ---------- */
 .grid-bg {
   position: fixed;
   inset: 0;
@@ -45,50 +46,53 @@ body {
 .grid-bg__reveal {
   position: absolute;
   inset: -2px;
-  background-size: 38px 38px;
-  animation: gridmove 26s linear infinite;
+  background-size: 40px 40px;
+  animation: gridmove 28s linear infinite;
 }
 .grid-bg__grid {
   background-image:
-    linear-gradient(to right, rgba(20, 22, 28, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 22, 28, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
 }
 .grid-bg__reveal {
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--color-accent) 60%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-accent) 60%, transparent) 1px, transparent 1px);
-  -webkit-mask-image: radial-gradient(220px circle at var(--mx) var(--my), #000 0%, transparent 72%);
-  mask-image: radial-gradient(220px circle at var(--mx) var(--my), #000 0%, transparent 72%);
+    linear-gradient(to right, color-mix(in srgb, var(--color-accent) 75%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-accent) 75%, transparent) 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(240px circle at var(--mx) var(--my), #000 0%, transparent 72%);
+  mask-image: radial-gradient(240px circle at var(--mx) var(--my), #000 0%, transparent 72%);
 }
 @keyframes gridmove {
   from { background-position: 0 0; }
-  to { background-position: 38px 38px; }
+  to { background-position: 40px 40px; }
 }
 .grid-bg__blob {
   position: absolute;
   width: 46rem;
   height: 46rem;
   border-radius: 9999px;
-  filter: blur(64px);
-  opacity: 0.55;
+  filter: blur(70px);
+  opacity: 0.5;
 }
 .grid-bg__blob--1 {
-  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 60%);
-  top: -20rem;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 40%, transparent), transparent 60%);
+  top: -22rem;
   right: -12rem;
-  animation: float1 19s ease-in-out infinite;
+  animation: float1 20s ease-in-out infinite;
 }
 .grid-bg__blob--2 {
-  background: radial-gradient(circle, rgba(110, 122, 145, 0.16), transparent 60%);
-  bottom: -22rem;
+  background: radial-gradient(circle, rgba(255, 77, 79, 0.14), transparent 60%);
+  bottom: -24rem;
   left: -14rem;
-  animation: float2 23s ease-in-out infinite;
+  animation: float2 24s ease-in-out infinite;
 }
-@keyframes float1 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-4rem, 3rem); }
+@keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-4rem, 3rem); } }
+@keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(5rem, -3rem); } }
+
+/* 漂浮徽章 */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1.5deg); }
 }
-@keyframes float2 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(5rem, -3rem); }
-}
+.floaty { animation: floaty 6.5s ease-in-out infinite; }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.spin-slow { animation: spin-slow 40s linear infinite; transform-origin: center; }
