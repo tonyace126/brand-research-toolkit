@@ -33,7 +33,7 @@
     radial-gradient(45% 40% at 100% 0%, #000, transparent 70%);
   opacity: .9;
 }
-.hud-bg > * { position: relative; z-index: 1; }
+.hud-bg > *:not(.holo):not(.holo-replay) { position: relative; z-index: 1; }
 
 /* 巨大幽靈浮水印字（章節背景） */
 .ghost-title {
@@ -232,22 +232,22 @@
 .bar > i::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, rgba(0,0,0,.18) 0 5px, transparent 5px 10px); }
 .bar.cyan > i { background: var(--color-cyan); box-shadow: 0 0 10px -1px var(--color-cyan); }
 
-.ring { position: relative; width: 148px; aspect-ratio: 1; isolation: isolate; }
-.ring .dial {
+.rc-ring { position: relative; width: 148px; aspect-ratio: 1; }
+.rc-ring .dial {
   position: absolute; inset: 0; border-radius: 50%;
   background: conic-gradient(var(--color-accent) calc(var(--p,40) * 1%), rgba(255,255,255,.07) 0);
   -webkit-mask: radial-gradient(farthest-side, transparent 61%, #000 62%);
           mask: radial-gradient(farthest-side, transparent 61%, #000 62%);
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-accent) 40%, transparent));
 }
-.ring .ticks {
+.rc-ring .ticks {
   position: absolute; inset: 8px; border-radius: 50%;
   background: repeating-conic-gradient(var(--color-line) 0 1deg, transparent 1deg 9deg);
   -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 72%, #000 78%, transparent 80%);
           mask: radial-gradient(farthest-side, transparent 70%, #000 72%, #000 78%, transparent 80%);
 }
-.ring .val { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.ring .val b { font-family: var(--font-display); font-weight: 700; font-size: 32px; color: var(--color-ink); }
+.rc-ring .val { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.rc-ring .val b { font-family: var(--font-display); font-weight: 700; font-size: 32px; color: var(--color-ink); }
 
 .row { display: flex; align-items: center; }
 .divider { height: 1px; background: var(--color-line); border: 0; }
@@ -388,7 +388,7 @@
   /* 總覽：環形卡整排 + KPI 2×2 */
   .ov-top { grid-template-columns: 1fr 1fr; gap: 10px; }
   .ringcard { grid-column: 1 / -1; padding: 18px 20px; gap: 16px; }
-  .ringcard .ring { width: 96px !important; flex: none; }
+  .ringcard .rc-ring{ width: 96px !important; flex: none; }
   .ringcard .meta { font-size: 13px; line-height: 1.7; }
   .kpi { min-height: 0; padding: 16px 18px; gap: 4px; }
   .kpi .idx { margin-bottom: 8px; }
