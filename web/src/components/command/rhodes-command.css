@@ -232,7 +232,7 @@
 .bar > i::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, rgba(0,0,0,.18) 0 5px, transparent 5px 10px); }
 .bar.cyan > i { background: var(--color-cyan); box-shadow: 0 0 10px -1px var(--color-cyan); }
 
-.ring { position: relative; width: 148px; aspect-ratio: 1; }
+.ring { position: relative; width: 148px; aspect-ratio: 1; isolation: isolate; }
 .ring .dial {
   position: absolute; inset: 0; border-radius: 50%;
   background: conic-gradient(var(--color-accent) calc(var(--p,40) * 1%), rgba(255,255,255,.07) 0);
@@ -274,8 +274,8 @@
 @media (max-width: 1080px){ .ov-top { grid-template-columns: 1fr 1fr 1fr; } }
 @media (max-width: 680px){ .ov-top { grid-template-columns: 1fr 1fr; } }
 .ringcard { display: flex; align-items: center; gap: 20px; padding: 22px 24px; }
-.ringcard .meta { font-size: 13.5px; color: var(--color-muted); line-height: 1.8; }
-.ringcard .meta b { color: var(--color-ink); font-weight: 700; }
+.ringcard .meta { font-size: 13.5px; color: var(--color-muted); line-height: 1.75; min-width: 0; }
+.ringcard .meta b { color: var(--color-ink); font-weight: 700; white-space: nowrap; }
 .kpi { padding: 22px 24px; display: flex; flex-direction: column; justify-content: center; min-height: 132px; }
 .kpi .num { font-family: var(--font-display); font-weight: 700; font-size: 46px; line-height: 1; font-variant-numeric: tabular-nums; }
 .kpi .lbl { color: var(--color-muted); font-size: 13.5px; margin-top: 10px; }
@@ -295,6 +295,9 @@
 .pcard .pbarlbl { font-family: var(--font-mono); font-size: 12px; color: var(--color-muted); margin: 14px 0 8px; }
 .pcard .keyrow { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--color-muted); margin: 16px 0 10px; letter-spacing: .04em; }
 .pcard .keyrow b { color: var(--color-ink); }
+/* 空值欄位：淡化 */
+.pcard .keyrow .kv-empty { opacity: .4; }
+.pcard .keyrow .kv-empty b { color: var(--color-muted); font-weight: 500; }
 .pcard .pin { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: rgba(255,255,255,.03); border: 1px solid var(--color-line); font-size: 13.5px; color: var(--color-ink); }
 .pcard .pin .tk { width: 4px; height: 16px; background: var(--color-danger); flex: none; }
 .pcard .pfoot { display: flex; justify-content: flex-end; margin-top: 14px; }

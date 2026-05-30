@@ -67,7 +67,8 @@ async function queryAll(dbId: string, token: string) {
 
 export async function getPortfolio(): Promise<Portfolio> {
   const token = process.env.NOTION_TOKEN;
-  const today = new Date().toISOString().slice(0, 10);
+  // 用台灣時區算「今天」，避免伺服器 UTC 比台灣慢 8 小時、凌晨時日期落後一天。
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
   if (!token) {
     return { ...SAMPLE, today, syncedAt: today, live: false };
   }

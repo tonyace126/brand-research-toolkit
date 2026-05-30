@@ -6,6 +6,7 @@
 // =====================================================================
 import { useEffect, useState, type CSSProperties, type HTMLAttributes, type FC } from "react";
 import { RHODES_DATA, type RhodesData } from "./data";
+import HoloBrief from "./HoloBrief";
 import "./rhodes-command.css";
 
 type Theme = "vanguard" | "blueprint";
@@ -15,6 +16,10 @@ type Theme = "vanguard" | "blueprint";
 const ImageSlot = "image-slot" as unknown as FC<
   HTMLAttributes<HTMLElement> & { shape?: string; placeholder?: string }
 >;
+
+/** 空值判斷：null / 空字串 / 破折號都算空 */
+const isEmptyVal = (v?: string | null) =>
+  v == null || v === "" || v === "—" || v === "-";
 
 /* 完成度環 */
 function Ring({ p, size = 148, big = 32 }: { p: number; size?: number; big?: number }) {
@@ -39,7 +44,7 @@ function Overview({ data: D }: { data: RhodesData }) {
           <div className="meta">
             <b>平均完成度</b><br />
             {D.stats.total} 個專案 · 進行中 {s.active}<br />
-            基準日 {D.syncDate}
+            基準日 <span style={{ whiteSpace: "nowrap" }}>{D.syncDate}</span>
           </div>
         </div>
         <div className="panel cut kpi ix"><span className="sheen" /><div className="idx">// 0x01</div><div className="num">{s.total}</div><div className="lbl">專案數</div></div>
@@ -65,8 +70,18 @@ function Overview({ data: D }: { data: RhodesData }) {
               <span className="tag active">{p.status}</span>
               <div className="pbarlbl">完成度 {p.progress}%（估）</div>
               <div className="bar"><i style={{ width: `${p.progress}%` }} /></div>
-              <div className="keyrow"><span>下個關鍵 <b>{p.next}</b></span><span>上線 <b>{p.launch}</b></span></div>
-              <div className="pin"><span className="tk" />{p.pin}</div>
+              {(() => {
+                const noNext = isEmptyVal(p.next);
+                const noLaunch = isEmptyVal(p.launch);
+                if (noNext && noLaunch) return null; // 兩者皆空 → 整列收掉
+                return (
+                  <div className="keyrow">
+                    <span className={noNext ? "kv-empty" : ""}>下個關鍵 <b>{noNext ? "—" : p.next}</b></span>
+                    <span className={noLaunch ? "kv-empty" : ""}>上線 <b>{noLaunch ? "—" : p.launch}</b></span>
+                  </div>
+                );
+              })()}
+              {isEmptyVal(p.pin) ? null : <div className="pin"><span className="tk" />{p.pin}</div>}
               <div className="pfoot"><span className="notion">Notion ↗</span></div>
             </div>
           ))}
@@ -157,6 +172,13 @@ export default function RhodesCommand({ data = RHODES_DATA }: { data?: RhodesDat
 
   return (
     <div className="hud-bg">
+      <HoloBrief
+        activeCount={data.stats.active}
+        due7Count={data.due7}
+        overdueCount={data.stats.overdue}
+        readiness={data.stats.readiness}
+        syncDate={data.syncDate}
+      />
       <div className="shell">
         <div className="hero">
           <div className="eyebrow"><span className="live-dot" />LIVE · 同步 {data.syncDate}</div>

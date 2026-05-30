@@ -21,3 +21,4 @@ prototype/gitlab-sync/project-map.json
 # Python 編譯快取
 __pycache__/
 *.pyc
+.vercel
