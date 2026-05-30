@@ -198,7 +198,7 @@ export default function RhodesCommand({ data = RHODES_DATA }: { data?: RhodesDat
             <button aria-selected={tab === "overview"} onClick={() => setTab("overview")}>作戰總覽</button>
             <button aria-selected={tab === "ops"} onClick={() => setTab("ops")}>菁英幹員</button>
           </div>
-          <button className="btn ghost" style={{ marginLeft: "auto" }} onClick={toggleTheme}>
+          <button className="btn ghost theme-toggle" onClick={toggleTheme}>
             {theme === "vanguard" ? "切到亮白藍圖" : "切到暗色先鋒"}
           </button>
         </div>

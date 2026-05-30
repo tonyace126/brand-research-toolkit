@@ -268,6 +268,7 @@
 
 /* tabs row（已鎖定先鋒，無皮膚切換器） */
 .tabrow { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.tabrow .theme-toggle { margin-left: auto; }
 
 /* overview grid */
 .ov-top { display: grid; grid-template-columns: 1.15fr 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 26px; }
@@ -380,10 +381,12 @@
   .statbar .stat { width: auto; min-width: 0; padding: 14px 16px; }
   .statbar .stat .num { font-size: 30px; }
 
-  /* 分頁佔滿一行、左右各區 */
+  /* 分頁佔滿一行；主題切換鈕浮到標題列右側（不再自己佔一排） */
+  .shell { position: relative; }
   .tabrow { gap: 12px; margin-bottom: 22px; }
   .tabrow .seg { width: 100%; }
   .tabrow .seg button { flex: 1; justify-content: center; }
+  .tabrow .theme-toggle { position: absolute; top: 34px; right: 16px; margin: 0; z-index: 3; }
 
   /* 總覽：環形卡整排 + KPI 2×2 */
   .ov-top { grid-template-columns: 1fr 1fr; gap: 10px; }
