@@ -4,11 +4,17 @@
 // props: { data?: RhodesData }  未傳則用內建假資料 RHODES_DATA
 // 含主題切換：暗色先鋒 ⇄ 亮白藍圖（寫入 <html data-theme>，存 localStorage）
 // =====================================================================
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type HTMLAttributes, type FC } from "react";
 import { RHODES_DATA, type RhodesData } from "./data";
 import "./rhodes-command.css";
 
 type Theme = "vanguard" | "blueprint";
+
+// image-slot.js 提供的 web component（在 public/，由 layout 載入）。
+// 用有型別的字串標籤包裝，避免依賴全域 JSX 宣告。
+const ImageSlot = "image-slot" as unknown as FC<
+  HTMLAttributes<HTMLElement> & { shape?: string; placeholder?: string }
+>;
 
 /* 完成度環 */
 function Ring({ p, size = 148, big = 32 }: { p: number; size?: number; big?: number }) {
@@ -112,6 +118,8 @@ function Operators({ data: D }: { data: RhodesData }) {
               <span className="sheen" />
               <span className="opcode">{o.role.slice(0, 3).toUpperCase()}-{o.idx} // 0x{o.idx}</span>
               <span className="opscan" />
+              {/* 人物剪影上傳區（image-slot.js 提供的 web component） */}
+              <ImageSlot id={`op-fig-${o.idx}`} className="opfig" shape="rect" placeholder="人物去背 PNG" />
               <div className="ohead">
                 <div className="oglyph"><span>{o.idx}</span></div>
                 <div><div className="oname">{o.name}</div><div className="orole">{o.role}</div></div>

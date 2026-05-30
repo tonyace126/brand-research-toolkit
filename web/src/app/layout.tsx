@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import "./blueprint-theme.css";
 
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hant" data-theme="vanguard" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <Script src="/image-slot.js" strategy="beforeInteractive" />
+        {children}
+      </body>
     </html>
   );
 }
