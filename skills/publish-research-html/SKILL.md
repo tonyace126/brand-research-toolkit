@@ -64,6 +64,24 @@ NOTIFY="$CLAUDE_PROJECT_DIR/prototype/slack-notify/notify.py"
 - 模組不存在 / 未設定 `.env` → 不發、不報錯（保持 plugin 公開預設行為）
 - 已設定（`.env` 內 `SLACK_LIVE=1` + `SLACK_WEBHOOK_URL`）→ 自動發一則含真實網址的 Slack 通知
 
+### 6. 歸檔到研究知識庫（選用，預設無動作）
+若設定檔 `~/.config/research-publisher.json` 內有 `research_kb_data_source_id`，
+且當前 session 連著 Notion，就在該知識庫新增一筆（用 Notion 工具 create-pages）：
+
+| 欄位 | 來源 |
+|---|---|
+| 主題 | title |
+| 研究日期 | 今天 |
+| 涵蓋平台 | 本次研究涵蓋的平台（多選） |
+| 聲量級距 | 🔥 爆量 / 高 / 中 / 低 / 無聲量（用級距，不用假數字） |
+| 重點摘要 | tldr |
+| 發布網址 | `<shares_base_url>/<slug>.html` |
+| 來源數 | sources 筆數 |
+| 關聯專案 | 留空（純研究）；使用者明確說要連某客戶專案時才填 |
+
+- 未設定 `research_kb_data_source_id` / 無 Notion → 跳過，不報錯
+- 設定了 → 研究自動沉澱成可查詢、可篩選的知識庫紀錄
+
 ## Setup 流程（首次使用）
 
 互動式問 5 題：
