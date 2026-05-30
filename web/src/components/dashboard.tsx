@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import GlobeHero from "@/components/globe-hero";
 import type { Portfolio, Project, Reminder, Priority, Agent } from "@/lib/types";
 
 /* ---------- helpers ---------- */
@@ -200,20 +201,15 @@ export default function Dashboard({ data, agents }: { data: Portfolio; agents: A
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-20 pt-6 sm:px-6">
-      {/* top */}
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            <span className="text-accent">// </span>小蜜蜂
-          </h1>
-          <p className="mt-0.5 text-xs text-muted">
-            {data.source} · 同步於 {data.syncedAt}
-            <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${data.live ? "bg-emerald-100 text-emerald-600" : "bg-zinc-100 text-zinc-500"}`}>
-              {data.live ? "● LIVE" : "○ 範例"}
-            </span>
-          </p>
-        </div>
-      </div>
+      {/* hero */}
+      <GlobeHero
+        live={data.live}
+        synced={data.syncedAt}
+        count={projects.length}
+        active={active}
+        overdue={overdue.length}
+        avg={avg}
+      />
 
       {/* tabs */}
       <div className="mb-6 inline-flex rounded-full border border-line bg-surface p-1 shadow-sm">
