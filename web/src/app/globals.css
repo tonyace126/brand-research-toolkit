@@ -22,8 +22,8 @@ body {
 }
 
 body {
-  font-family: "Nunito", "Huninn", ui-rounded, "Varela Round", -apple-system,
-    "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-family: "Saira", "Noto Sans TC", -apple-system, "PingFang TC",
+    "Microsoft JhengHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -96,3 +96,28 @@ body {
 .floaty { animation: floaty 6.5s ease-in-out infinite; }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 .spin-slow { animation: spin-slow 40s linear infinite; transform-origin: center; }
+
+/* HUD 代碼字 */
+.font-code { font-family: "Chakra Petch", "Saira", monospace; }
+
+/* 角落網點（halftone）+ 暗角，營造方舟氛圍 */
+.grid-bg__halftone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px);
+  background-size: 7px 7px;
+  -webkit-mask-image:
+    radial-gradient(58% 50% at 100% 0%, #000 0%, transparent 70%),
+    radial-gradient(58% 50% at 0% 100%, #000 0%, transparent 70%);
+  mask-image:
+    radial-gradient(58% 50% at 100% 0%, #000 0%, transparent 70%),
+    radial-gradient(58% 50% at 0% 100%, #000 0%, transparent 70%);
+}
+.grid-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.55);
+}

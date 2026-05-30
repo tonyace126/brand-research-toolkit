@@ -256,11 +256,11 @@ export default function Dashboard({ data, agents }: { data: Portfolio; agents: A
             {/* reminders + suggestions */}
             <div className="mt-4 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
               <section className="rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(20,22,28,.04)]">
-                <h2 className="mb-2 text-sm font-bold"><span className="text-accent">//</span> 當前任務提醒</h2>
+                <h2 className="mb-3 flex items-center gap-2"><span className="h-4 w-1 shrink-0 bg-accent" /><span className="text-sm font-bold">當前任務提醒</span><span className="font-code text-[10px] uppercase tracking-widest text-muted">// TASKS</span></h2>
                 {reminders.length ? <>{group("🔴 已逾期", overdue)}{group("🟡 7 天內", soon)}{group("⚪ 之後", later)}</> : <p className="text-sm text-muted">目前沒有開放事項 🎉</p>}
               </section>
               <section className="rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(20,22,28,.04)]">
-                <h2 className="mb-2 text-sm font-bold"><span className="text-accent">//</span> 我的建議</h2>
+                <h2 className="mb-3 flex items-center gap-2"><span className="h-4 w-1 shrink-0 bg-accent" /><span className="text-sm font-bold">凱爾希簡報</span><span className="font-code text-[10px] uppercase tracking-widest text-muted">// ADVISORY</span></h2>
                 <ul className="space-y-2 text-[13px] text-ink/75">
                   {overdue.length > 0 && <li>🔴 最急：「{overdue[0].text}」已逾期，建議今天先清。</li>}
                   {weekDue > 0 && <li>⏰ 有 {weekDue} 個專案在 7 天內有關鍵期限，注意排程。</li>}

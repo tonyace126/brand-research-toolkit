@@ -19,9 +19,17 @@ function dayOfYear(d: Date) {
 }
 
 function Stat({ value, label, alert = false }: { value: string | number; label: string; alert?: boolean }) {
+  if (alert) {
+    return (
+      <div className="rounded-xl bg-danger px-4 py-2.5 text-white shadow-[0_0_26px_-6px_rgba(255,77,79,0.7)]">
+        <div className="text-2xl font-black leading-none">{value}</div>
+        <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-white/80">{label}</div>
+      </div>
+    );
+  }
   return (
     <div className="rounded-xl border border-line bg-surface/70 px-4 py-2.5 backdrop-blur-sm">
-      <div className={`text-2xl font-black leading-none ${alert ? "text-danger" : "text-ink"}`}>{value}</div>
+      <div className="text-2xl font-black leading-none text-ink">{value}</div>
       <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-muted">{label}</div>
     </div>
   );
@@ -31,19 +39,20 @@ function Emblem() {
   return (
     <svg viewBox="0 0 120 120" className="size-full" fill="none">
       {/* 外圈刻度環（緩轉） */}
-      <g className="spin-slow" stroke="currentColor" strokeWidth="1" opacity="0.5">
-        <circle cx="60" cy="60" r="56" strokeDasharray="2 6" />
+      <g className="spin-slow" stroke="currentColor" strokeWidth="1" opacity="0.4">
+        <circle cx="60" cy="62" r="56" strokeDasharray="2 7" />
       </g>
-      <circle cx="60" cy="60" r="48" stroke="currentColor" strokeWidth="1" opacity="0.25" />
-      {/* 菱形外框 */}
-      <rect x="60" y="14" width="65" height="65" transform="rotate(45 60 14)" stroke="var(--color-accent)" strokeWidth="2" opacity="0.9" />
-      {/* 內部上升箭頭（羅德島意象，原創幾何） */}
-      <path d="M60 36 L82 78 H64 V92 H56 V78 H38 Z" fill="var(--color-accent)" opacity="0.18" />
-      <path d="M60 36 L82 78 H64 V92 H56 V78 H38 Z" stroke="var(--color-accent)" strokeWidth="2" />
-      {/* 角落點 */}
-      <circle cx="60" cy="8" r="2.5" fill="var(--color-accent)" />
-      <circle cx="112" cy="60" r="2" fill="currentColor" opacity="0.6" />
-      <circle cx="8" cy="60" r="2" fill="currentColor" opacity="0.6" />
+      <circle cx="60" cy="62" r="47" stroke="currentColor" strokeWidth="1" opacity="0.18" />
+      {/* 三角外框（原創構型，非官方標誌） */}
+      <path d="M60 16 L104 96 H16 Z" stroke="var(--color-accent)" strokeWidth="2" opacity="0.9" />
+      {/* 內部上升標記 */}
+      <path d="M60 40 L80 80 H66 V90 H54 V80 H40 Z" fill="var(--color-accent)" opacity="0.16" />
+      <path d="M60 40 L80 80 H66 V90 H54 V80 H40 Z" stroke="var(--color-accent)" strokeWidth="2" />
+      {/* 底線 + 端點 */}
+      <line x1="26" y1="101" x2="94" y2="101" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      <circle cx="60" cy="10" r="2.5" fill="var(--color-accent)" />
+      <circle cx="26" cy="101" r="1.8" fill="currentColor" opacity="0.6" />
+      <circle cx="94" cy="101" r="1.8" fill="currentColor" opacity="0.6" />
     </svg>
   );
 }
@@ -62,7 +71,7 @@ export default function GlobeHero({
         <div className="floaty size-40 text-ink/80 md:size-48">
           <Emblem />
         </div>
-        <div className="mt-1 text-right font-mono text-[10px] uppercase tracking-[0.3em] text-muted">
+        <div className="font-code mt-1 text-right text-[10px] uppercase tracking-[0.3em] text-muted">
           RHODES // 0x05
         </div>
       </div>

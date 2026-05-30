@@ -20,6 +20,7 @@ export default function GridBackground() {
       <div className="grid-bg__blob grid-bg__blob--2" />
       <div className="grid-bg__grid" />
       <div className="grid-bg__reveal" />
+      <div className="grid-bg__halftone" />
     </div>
   );
 }

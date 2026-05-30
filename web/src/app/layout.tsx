@@ -15,11 +15,11 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant" className="h-full antialiased">
       <body className="relative flex min-h-full flex-col">
-        {/* 圓體：Huninn(中文圓體) + Nunito(拉丁圓體) */}
+        {/* 方舟風幾何字型：Saira(拉丁) + Noto Sans TC(中文) + Chakra Petch(HUD 代碼) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Huninn&family=Nunito:wght@500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Saira:wght@500;600;700;800&display=swap"
           rel="stylesheet"
         />
         <GridBackground />
