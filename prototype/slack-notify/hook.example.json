@@ -1,0 +1,16 @@
+{
+  "_comment": "把這段合併進【專案層】 .claude/settings.json 的 hooks（不是 user 層 ~/.claude/，避免污染你其他專案）。綁 Stop 事件 = 每次收工觸發一次（低頻、安全）。絕不用 PostToolUse '*'（高頻、會洗版/撞限流）。",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | python3 \"$CLAUDE_PROJECT_DIR/prototype/slack-notify/notify.py\""
+          }
+        ]
+      }
+    ]
+  }
+}
