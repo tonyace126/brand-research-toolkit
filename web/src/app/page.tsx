@@ -66,6 +66,7 @@ function toRhodes(pf: Portfolio): RhodesData {
     next: p.nextDue || "—",
     launch: p.launch || "—",
     pin: p.risk && p.risk !== "—" ? p.risk : p.thisWeek && p.thisWeek !== "—" ? p.thisWeek : "—",
+    url: p.url || "#",
   }));
 
   const within7: TaskItem[] = [];

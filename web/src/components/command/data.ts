@@ -7,6 +7,7 @@ export interface ProjectItem {
   code: string; client: string; tag: string; priority: string;
   title: string; status: string; progress: number;
   next: string; launch: string; pin: string;
+  url: string; // 該專案的 Notion 頁面連結（"#" 或空 = 無連結）
 }
 export interface TaskItem { title: string; meta: string; due: string; hot: boolean; }
 export interface OperatorItem { name: string; role: string; idx: string; state: string; }
@@ -31,13 +32,13 @@ export const RHODES_DATA: RhodesData = {
   projects: [
     { code: "PRJ-A01", client: "示範客戶 A", tag: "A", priority: "高",
       title: "形象短片企劃",
-      status: "進行中", progress: 45, next: "—", launch: "—", pin: "—" },
+      status: "進行中", progress: 45, next: "—", launch: "—", pin: "—", url: "#" },
     { code: "PRJ-B01", client: "示範客戶 B", tag: "B", priority: "中",
       title: "年度數位企劃",
-      status: "進行中", progress: 40, next: "—", launch: "—", pin: "—" },
+      status: "進行中", progress: 40, next: "—", launch: "—", pin: "—", url: "#" },
     { code: "PRJ-C01", client: "示範客戶 C", tag: "C", priority: "中",
       title: "公益社群短影音",
-      status: "進行中", progress: 30, next: "2026-02-01", launch: "—", pin: "等 brief" },
+      status: "進行中", progress: 30, next: "2026-02-01", launch: "—", pin: "等 brief", url: "#" },
   ],
   tasks: {
     within7: [

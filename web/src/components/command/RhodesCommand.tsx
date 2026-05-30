@@ -82,7 +82,13 @@ function Overview({ data: D }: { data: RhodesData }) {
                 );
               })()}
               {isEmptyVal(p.pin) ? null : <div className="pin"><span className="tk" />{p.pin}</div>}
-              <div className="pfoot"><span className="notion">Notion ↗</span></div>
+              <div className="pfoot">
+                {isEmptyVal(p.url) || p.url === "#" ? (
+                  <span className="notion is-off">Notion —</span>
+                ) : (
+                  <a className="notion" href={p.url} target="_blank" rel="noopener noreferrer">Notion ↗</a>
+                )}
+              </div>
             </div>
           ))}
         </div>

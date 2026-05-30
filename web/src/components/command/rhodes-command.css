@@ -302,7 +302,8 @@
 .pcard .pin { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: rgba(255,255,255,.03); border: 1px solid var(--color-line); font-size: 13.5px; color: var(--color-ink); }
 .pcard .pin .tk { width: 4px; height: 16px; background: var(--color-danger); flex: none; }
 .pcard .pfoot { display: flex; justify-content: flex-end; margin-top: 14px; }
-.pcard .notion { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-cyan); cursor: pointer; letter-spacing: .04em; }
+.pcard .notion { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-cyan); cursor: pointer; letter-spacing: .04em; text-decoration: none; }
+.pcard .notion.is-off { color: var(--color-muted); cursor: default; opacity: .55; }
 
 /* bottom two panels */
 .bottom { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
@@ -361,6 +362,7 @@
 .pcard.ix:hover .bar > i { filter: brightness(1.15); }
 .pcard .notion { transition: color .22s ease, transform .22s ease; }
 .pcard.ix:hover .notion { color: var(--color-accent); }
+.pcard.ix:hover .notion.is-off { color: var(--color-muted); }
 .opcard .oglyph, .opcard .oglyph span, .opcard .oname, .opcard .ostate .sd {
   transition: background-color .22s ease, color .22s ease, border-color .22s ease; }
 .opcard.ix:hover .oglyph { background: var(--color-accent); border-color: transparent; }
@@ -386,7 +388,8 @@
   .tabrow { gap: 12px; margin-bottom: 22px; }
   .tabrow .seg { width: 100%; }
   .tabrow .seg button { flex: 1; justify-content: center; }
-  .tabrow .theme-toggle { position: absolute; top: 34px; right: 16px; margin: 0; z-index: 3; }
+  /* 底邊對齊「羅德島總控」標題底線（相對 .shell；標題底約 112px、按鈕高 39px） */
+  .tabrow .theme-toggle { position: absolute; top: 73px; right: 16px; margin: 0; z-index: 3; }
 
   /* 總覽：環形卡整排 + KPI 2×2 */
   .ov-top { grid-template-columns: 1fr 1fr; gap: 10px; }
