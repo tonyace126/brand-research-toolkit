@@ -66,16 +66,6 @@ export default function GlobeHero({
 
   return (
     <section className="relative mb-8 pt-1">
-      {/* 漂浮徽章 */}
-      <div className="pointer-events-none absolute -top-2 right-0 z-0 hidden text-ink sm:block" aria-hidden>
-        <div className="floaty size-40 text-ink/80 md:size-48">
-          <Emblem />
-        </div>
-        <div className="font-code mt-1 text-right text-[10px] uppercase tracking-[0.3em] text-muted">
-          RHODES // 0x05
-        </div>
-      </div>
-
       <div className="relative z-10">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/60 px-3 py-1 text-xs font-bold text-accent backdrop-blur-sm">
           <span className={`size-1.5 rounded-full ${live ? "bg-accent" : "bg-zinc-500"}`} />

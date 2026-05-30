@@ -15,9 +15,11 @@
   --bg: #0c0d11;
 }
 
-html,
-body {
+html {
   background: var(--bg);
+}
+body {
+  background: transparent;
   color: var(--color-ink);
 }
 
@@ -38,7 +40,10 @@ body {
   inset: 0;
   z-index: -10;
   overflow: hidden;
-  background: var(--bg);
+  background:
+    radial-gradient(120% 85% at 82% -12%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 55%),
+    radial-gradient(100% 75% at -12% 112%, rgba(255, 77, 79, 0.08), transparent 55%),
+    var(--bg);
   --mx: 50vw;
   --my: 28vh;
 }
@@ -51,8 +56,8 @@ body {
 }
 .grid-bg__grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
 }
 .grid-bg__reveal {
   background-image:
