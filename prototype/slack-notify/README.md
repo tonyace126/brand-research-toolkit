@@ -12,11 +12,21 @@
 | 觸發事件 | 含 `Stop` + `PostToolUse *`（高頻） | **只綁 `Stop`（低頻）** |
 | 副作用 | 可能自動發開發信 / 寫 CRM | **只發通知，零外發、零花費** |
 
-## 三步上線
+## 自動化:接在「電子報發布完成」後（建議）
 
+最乾淨的觸發點是 `publish-research-html` skill 的最後一步（已內建、選用）：
+push 成功 → 自動呼叫 `notify.py`，帶**真實標題 + 對外網址**。沒設定 `.env` 時不發、不報錯。
+
+**啟用只要兩步：**
 1. **建 webhook**：Slack → Incoming Webhooks → 選 `東尼大木羅德島` → 複製 URL。
-2. **填設定**：`cp .env.example .env`，貼上 `SLACK_WEBHOOK_URL`。先別開 `SLACK_LIVE`。
-3. **接 hook**：把 `hook.example.json` 的內容合併進專案的 `.claude/settings.json`。
+2. **填設定**：`cp .env.example .env`，貼上 `SLACK_WEBHOOK_URL`，並設 `SLACK_LIVE=1`。
+
+`notify.py` 會自動讀同目錄的 `.env`，之後每次發布電子報就自動通知，零手動。
+
+## 另一種:綁 Stop hook（每次收工都發，會洗版，不建議）
+
+若真要綁生命週期事件，把 `hook.example.json` 合併進專案 `.claude/settings.json`。
+注意：`Stop` 會在**每個** session 收工觸發，開發雜事也會發 → 建議只用上面的 publish 整合。
 
 ## 測試
 

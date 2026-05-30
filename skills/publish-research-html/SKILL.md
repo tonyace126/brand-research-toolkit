@@ -50,6 +50,20 @@ description: Convert any research result (tables, summaries, sources) into a cle
 - y → 執行 git add/commit/push（見下方）
 - n → 結束（檔案已在本機）
 
+### 5. 發送完成通知（選用，預設無動作）
+push 成功後，若工作目錄存在通知模組（`$CLAUDE_PROJECT_DIR/prototype/slack-notify/notify.py`），
+就把標題與對外網址餵給它（未設定 `.env` 時它只會 dry-run，公開使用者完全無感）：
+
+```bash
+NOTIFY="$CLAUDE_PROJECT_DIR/prototype/slack-notify/notify.py"
+[ -f "$NOTIFY" ] && printf '%s' \
+  '{"summary":"電子報已發布","topic":"<title>","url":"<shares_base_url>/<slug>.html"}' \
+  | python3 "$NOTIFY" || true
+```
+
+- 模組不存在 / 未設定 `.env` → 不發、不報錯（保持 plugin 公開預設行為）
+- 已設定（`.env` 內 `SLACK_LIVE=1` + `SLACK_WEBHOOK_URL`）→ 自動發一則含真實網址的 Slack 通知
+
 ## Setup 流程（首次使用）
 
 互動式問 5 題：

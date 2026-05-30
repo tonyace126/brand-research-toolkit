@@ -24,6 +24,22 @@ import sys
 import urllib.request
 
 
+def load_env() -> None:
+    """自動載入同目錄的 .env（若存在）。已存在的環境變數優先，不覆蓋。"""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key, val = key.strip(), val.strip().strip("'\"")
+            if key and key not in os.environ:
+                os.environ[key] = val
+
+
 def build_message(event: dict) -> str:
     """把事件資料組成一則 Slack 訊息。欄位都是可選的，缺了就略過。"""
     summary = event.get("summary") or "品牌研究完成"
@@ -38,6 +54,8 @@ def build_message(event: dict) -> str:
 
 
 def main() -> int:
+    load_env()  # 先載入 .env，省去每次手動 export
+
     # 1. 從 stdin 讀事件（hook 會餵 JSON；手動測試也可）
     raw = sys.stdin.read().strip() if not sys.stdin.isatty() else ""
     try:
