@@ -7,14 +7,14 @@ import type { Portfolio, Project, Reminder, Priority, Agent } from "@/lib/types"
 
 /* ---------- helpers ---------- */
 const PRIO: Record<Priority, { dot: string; label: string }> = {
-  高: { dot: "#ef4444", label: "高" },
-  中: { dot: "#f59e0b", label: "中" },
-  低: { dot: "#10b981", label: "低" },
+  高: { dot: "#2b6fff", label: "高" },
+  中: { dot: "#9aa3af", label: "中" },
+  低: { dot: "#cbd0d8", label: "低" },
 };
 const STAGE: Record<string, string> = {
-  進行中: "#6366f1",
-  未開始: "#9aa0a6",
-  完成: "#10b981",
+  進行中: "#2b6fff",
+  未開始: "#9aa3af",
+  完成: "#16181d",
 };
 
 function parseDate(s: string): Date | null {
@@ -47,7 +47,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
   );
 }
 
-function Ring({ pct, color = "#6366f1", size = 132 }: { pct: number; color?: string; size?: number }) {
+function Ring({ pct, color = "#2b6fff", size = 132 }: { pct: number; color?: string; size?: number }) {
   const r = size / 2 - 9;
   const c = 2 * Math.PI * r;
   const [off, setOff] = useState(c);
@@ -103,7 +103,7 @@ function ProjectCard({ p, today }: { p: Project; today: Date }) {
   if (nd) {
     const dd = daysBetween(nd, today);
     if (dd < 0) dueNode = <b className="text-red-500">{p.nextDue}（逾期 {Math.abs(dd)} 天）</b>;
-    else if (dd <= 7) dueNode = <b className="text-amber-500">{p.nextDue}（{dd} 天後）</b>;
+    else if (dd <= 7) dueNode = <b className="text-accent">{p.nextDue}（{dd} 天後）</b>;
     else dueNode = <span className="text-ink/70">{p.nextDue}</span>;
   }
   return (
@@ -127,7 +127,7 @@ function ProjectCard({ p, today }: { p: Project; today: Date }) {
           {p.stage}
         </span>
         {p.openItems > 0 && (
-          <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-600">未結 {p.openItems}</span>
+          <span className="rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-bold text-accent">未結 {p.openItems}</span>
         )}
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#eef0f4]">
@@ -163,8 +163,8 @@ function ReminderRow({ r, today }: { r: Reminder; today: Date }) {
   const dd = nd ? daysBetween(nd, today) : null;
   let tag = <span className="text-[10px] text-muted tabular-nums">{r.due}</span>;
   if (dd !== null && dd < 0) tag = <span className="whitespace-nowrap rounded-md bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">逾期 {Math.abs(dd)} 天</span>;
-  else if (dd === 0) tag = <span className="whitespace-nowrap rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">今天</span>;
-  else if (dd !== null && dd <= 7) tag = <span className="whitespace-nowrap rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">{dd} 天後</span>;
+  else if (dd === 0) tag = <span className="whitespace-nowrap rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-bold text-accent">今天</span>;
+  else if (dd !== null && dd <= 7) tag = <span className="whitespace-nowrap rounded-md bg-accent-soft px-2 py-0.5 text-[10px] font-bold text-accent">{dd} 天後</span>;
   return (
     <div className="flex items-center gap-3 border-b border-line py-2.5 last:border-0">
       <i className="size-2.5 shrink-0 rounded-full" style={{ background: PRIO[r.priority].dot }} />
@@ -283,7 +283,7 @@ export default function Dashboard({ data, agents }: { data: Portfolio; agents: A
                       <div className="text-[10px] uppercase tracking-wide text-muted">{a.role}</div>
                     </div>
                   </div>
-                  <div className={`mt-3 text-xs font-semibold ${a.status === "active" ? "text-emerald-500" : "text-muted"}`}>
+                  <div className={`mt-3 text-xs font-semibold ${a.status === "active" ? "text-accent" : "text-muted"}`}>
                     {a.status === "active" ? "● 工作中" : "○ 待命"}
                   </div>
                 </motion.div>

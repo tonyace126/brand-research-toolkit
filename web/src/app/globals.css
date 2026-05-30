@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-accent: #5b6cff;
-  --color-accent-soft: #eef0ff;
+  --color-accent: #2b6fff;
+  --color-accent-soft: #e8f0ff;
   --color-ink: #14161c;
   --color-muted: #6b7280;
   --color-line: #e7e8ee;
@@ -79,7 +79,7 @@ body {
   animation: float1 19s ease-in-out infinite;
 }
 .grid-bg__blob--2 {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent 60%);
+  background: radial-gradient(circle, rgba(110, 122, 145, 0.16), transparent 60%);
   bottom: -22rem;
   left: -14rem;
   animation: float2 23s ease-in-out infinite;
