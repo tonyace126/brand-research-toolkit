@@ -1,26 +1,134 @@
-import Dashboard from "@/components/dashboard";
+import RhodesCommand from "@/components/RhodesCommand";
+import { rhodesData } from "@/components/data";
+import type {
+  RhodesData,
+  ProjectItem,
+  TaskItem,
+  Priority as RcPriority,
+} from "@/components/data";
 import { getPortfolio } from "@/lib/notion";
-import type { Agent } from "@/lib/types";
+import type { Portfolio, Project, Reminder } from "@/lib/types";
 
 // 每次請求都即時連 Notion（不要在 build 時靜態化）
 export const dynamic = "force-dynamic";
 
-const AGENTS: Agent[] = [
-  { id: "po", name: "需求分析師", role: "product-owner", emoji: "🧭", status: "idle" },
-  { id: "planner", name: "專案規劃師", role: "planner", emoji: "🗺️", status: "idle" },
-  { id: "dev", name: "開發工程師", role: "developer", emoji: "💻", status: "idle" },
-  { id: "reviewer", name: "程式審查員", role: "reviewer", emoji: "🔍", status: "idle" },
-  { id: "qa", name: "品質驗收員", role: "qa", emoji: "✅", status: "idle" },
-  { id: "creative", name: "企劃", role: "creative-planner", emoji: "📝", status: "idle" },
-  { id: "director", name: "導演", role: "director", emoji: "🎬", status: "idle" },
-  { id: "editor", name: "剪輯", role: "editor", emoji: "✂️", status: "idle" },
+const DAY = 86_400_000;
+
+/* 凱爾希口吻每日問候（原創台詞，稱呼「東尼大木博士」）。
+   依當年第幾天輪替，每天進來都不一樣。 */
+const FLAVORS = [
+  "別皺眉，東尼大木博士。情勢仍在掌控之中——確認過，就繼續前進。",
+  "醒著就好好用腦，東尼大木博士。今天的羅德島，交給你下判斷。",
+  "數據不會說謊，東尼大木博士。該整理的我都擺好了，剩下的是你的決定。",
+  "情況我看過了，東尼大木博士。沒有意外，但別鬆懈——意外從不打招呼。",
+  "又是一天，東尼大木博士。別問累不累，先把眼前的任務理清楚。",
+  "保持清醒，東尼大木博士。羅德島不需要完美，只需要你持續往前。",
+  "我已就位，東尼大木博士。當你準備好下令，幹員隨時候命。",
 ];
 
-export default async function Page() {
-  const data = await getPortfolio();
-  return (
-    <main>
-      <Dashboard data={data} agents={AGENTS} />
-    </main>
+function dayOfYear(d: Date): number {
+  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
+  return Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - start) / DAY);
+}
+
+/** 由專案代碼／客戶推導 2–4 字徽記 */
+function tagOf(p: Project): string {
+  const fromCode = p.code.match(/^[A-Za-z]+/)?.[0];
+  const base = fromCode || p.client || p.code;
+  return base.slice(0, 4).toUpperCase();
+}
+
+/** 把 Notion 優先級對齊元件型別 */
+function prio(p: Project["priority"]): RcPriority {
+  return p === "高" || p === "中" || p === "低" ? p : "中";
+}
+
+/** 天數差（截止日相對今天，可為負＝逾期） */
+function daysUntil(due: string, todayMs: number): number {
+  const d = Date.parse(due);
+  if (Number.isNaN(d)) return Number.POSITIVE_INFINITY;
+  return Math.round((d - todayMs) / DAY);
+}
+
+/** 期限的人類可讀字串 */
+function dueLabel(due: string, n: number): string {
+  if (!Number.isFinite(n)) return due;
+  if (n < 0) return `逾期 ${Math.abs(n)} 天`;
+  if (n === 0) return "今天";
+  return `${n} 天後`;
+}
+
+function reminderMeta(r: Reminder): string {
+  return [r.project, r.client, r.type].filter(Boolean).join(" · ");
+}
+
+/** Portfolio（Notion）→ RhodesData（元件） */
+function toRhodes(pf: Portfolio): RhodesData {
+  // pf.today 為 "YYYY-MM-DD"（UTC 午夜）；非 live 時可能是 "—"，退回今日
+  const parsed = Date.parse(pf.today);
+  const base = Number.isNaN(parsed) ? Date.now() : parsed;
+
+  const projects: ProjectItem[] = pf.projects.map((p) => ({
+    code: p.code,
+    client: p.client || "—",
+    tag: tagOf(p),
+    priority: prio(p.priority),
+    title: p.name,
+    status: p.stage,
+    progress: p.completion,
+    next: p.nextDue || "—",
+    launch: p.launch || "—",
+    pin: p.risk && p.risk !== "—" ? p.risk : p.thisWeek && p.thisWeek !== "—" ? p.thisWeek : "—",
+  }));
+
+  // 任務：依截止日分群（≤7 天含逾期 / 之後）
+  const within7: TaskItem[] = [];
+  const later: TaskItem[] = [];
+  let overdue = 0;
+  let due7 = 0;
+  for (const r of pf.reminders) {
+    const n = daysUntil(r.due, base);
+    if (n < 0) overdue += 1;
+    if (n >= 0 && n <= 7) due7 += 1;
+    const task: TaskItem = {
+      title: r.text,
+      meta: reminderMeta(r),
+      due: n <= 7 ? dueLabel(r.due, n) : r.due,
+      hot: r.priority === "高",
+    };
+    (n <= 7 ? within7 : later).push(task);
+  }
+
+  const total = projects.length;
+  const active = projects.filter((p) => p.status === "進行中").length;
+  const readiness = total
+    ? Math.round(projects.reduce((s, p) => s + p.progress, 0) / total)
+    : 0;
+
+  const advisory: string[] = [];
+  if (overdue > 0)
+    advisory.push(`有 ${overdue} 個項目已逾期，建議優先處理或與對方重新議定期限。`);
+  if (due7 > 0)
+    advisory.push(`有 ${due7} 個任務在 7 天內到期，先確認排程與交付。`);
+  advisory.push(
+    `${active} 個專案同時進行中，把當週交付拆成任務逐一推進——對幹員下令即可調度。`,
   );
+
+  return {
+    syncDate: pf.syncedAt,
+    flavor: FLAVORS[dayOfYear(new Date(base)) % FLAVORS.length],
+    stats: { total, active, overdue, readiness },
+    due7,
+    projects,
+    tasks: { within7, later },
+    advisory,
+    // 幹員編制為固定設定，沿用設計稿
+    operators: rhodesData.operators,
+    operatorFlow: rhodesData.operatorFlow,
+  };
+}
+
+export default async function Page() {
+  const pf = await getPortfolio();
+  return <RhodesCommand data={toRhodes(pf)} />;
 }
