@@ -1,68 +1,68 @@
-/* =====================================================================
-   羅德島總控 // DESIGN TOKENS
-   Next.js 16 / React 19 / Tailwind CSS v4
-   ===================================================================== */
-
-/* ① 字型（必須放在所有 @import / 規則最前面） */
 @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Share+Tech+Mono&display=swap");
 
-/* ② Tailwind v4 入口 */
+/* =====================================================================
+   羅德島總控 // globals.css  —  Tailwind v4 主題入口
+   貼這份取代你的 app/globals.css（或把 @theme 區塊併入既有檔）
+   ===================================================================== */
 @import "tailwindcss";
 
-/* ③ 設計 token --------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+   ① DESIGN TOKENS —— Tailwind v4 @theme（會自動產出 bg-accent / text-ink…
+   並掛成 :root 的 --color-* 變數，全站 var() 直接可用）
+   --------------------------------------------------------------------- */
 @theme {
-  --color-accent:      #FFD400;
-  --color-accent-soft: rgba(255,212,0,.13);
-  --color-ink:         #E9EBEF;
-  --color-muted:       #8A92A0;
-  --color-line:        #23262E;
-  --color-surface:     #15171C;
-  --color-danger:      #FF4D4F;
-  --color-cyan:        #38BDF8;
-  --color-cyan-soft:   rgba(56,189,248,.12);
-  --color-warning:     #FFB020;
-  --color-success:     #36D399;
+  --color-accent:      #FFD400;             /* 主色：高亮 / 進度條 / active 分頁 / 連結 */
+  --color-accent-soft: rgba(255,212,0,.13); /* 主色淺色塊底（badge 背景） */
+  --color-ink:         #E9EBEF;             /* 主要文字（標題） */
+  --color-muted:       #8A92A0;             /* 次要文字（說明、標籤） */
+  --color-line:        #23262E;             /* 邊框 / 分隔線 */
+  --color-surface:     #15171C;             /* 面板 / 卡片底色 */
+  --color-danger:      #FF4D4F;             /* 緊急 / 逾期 / 警示 */
+  --color-cyan:        #38BDF8;             /* 輔助：資訊標記 / HUD 線 */
+  --color-cyan-soft:   rgba(56,189,248,.12);/* cyan 淺色塊底 */
+  --color-warning:     #FFB020;             /* 即將到期 / 7 天內 */
+  --color-success:     #36D399;             /* 完成 / 通過驗收 */
 
   --font-display: "Chakra Petch", "Noto Sans TC", system-ui, sans-serif;
   --font-body:    "Noto Sans TC", system-ui, sans-serif;
   --font-mono:    "Share Tech Mono", ui-monospace, monospace;
 
-  --radius: 0px;
-  --cut:    12px;
-  --cut-sm: 7px;
+  --radius: 0px;  --cut: 12px;  --cut-sm: 7px;
 
   --glow-accent: 0 0 0 1px rgba(255,212,0,.45), 0 0 18px -2px rgba(255,212,0,.35);
   --glow-cyan:   0 0 0 1px rgba(56,189,248,.45), 0 0 16px -2px rgba(56,189,248,.30);
   --glow-danger: 0 0 0 1px rgba(255,77,79,.55), 0 0 20px -2px rgba(255,77,79,.45);
   --shadow-panel: 0 1px 0 rgba(255,255,255,.03) inset, 0 24px 60px -32px #000;
 
-  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
-  --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
 }
 
-/* ④ :root 輔助變數 --------------------------------------------------- */
+/* ---------------------------------------------------------------------
+   ② 非語意變數（背景 HUD 圖層 / 斜紋）—— 不進 @theme，放 :root
+   --------------------------------------------------------------------- */
 :root {
-  --bg: #0A0B0E;
-  --hud-grid:        rgba(56,189,248,.05);
-  --hud-grid-strong: rgba(56,189,248,.075);
-  --hud-dot:         rgba(233,235,239,.05);
-  --hazard-a: #FFD400;
-  --hazard-b: #0A0B0E;
+  --bg: #0A0B0E;                            /* 整頁背景底色 */
+  --hud-grid:        rgba(56,189,248,.05);  /* 細網格線 */
+  --hud-grid-strong: rgba(56,189,248,.075); /* 粗網格線（節奏） */
+  --hud-dot:         rgba(233,235,239,.05); /* 半色調網點 */
+  --hazard-a:        #FFD400;               /* 危險斜紋亮條 */
+  --hazard-b:        #0A0B0E;               /* 危險斜紋暗條 */
 }
 
-/* ⑤ 主題變體 ---------------------------------------------------------- */
-[data-theme="terminal"] {
-  --color-accent: #38BDF8; --color-accent-soft: rgba(56,189,248,.13);
-  --color-cyan: #FFD400;   --color-cyan-soft: rgba(255,212,0,.12);
-  --glow-accent: 0 0 0 1px rgba(56,189,248,.45), 0 0 18px -2px rgba(56,189,248,.35);
-  --hazard-a: #38BDF8;
-}
-[data-theme="hazard"] {
-  --color-accent: #FFC400; --color-accent-soft: rgba(255,196,0,.16);
-  --color-surface: #14140F; --color-line: #2C2A1C; --bg: #0B0A06;
-  --hud-grid: rgba(255,212,0,.045); --hud-grid-strong: rgba(255,212,0,.07);
-  --hud-dot: rgba(255,225,160,.05);
-  --glow-accent: 0 0 0 1px rgba(255,196,0,.5), 0 0 22px -2px rgba(255,196,0,.4);
-}
+/* 訶：先鋒（vanguard）已是預設值。本版依需求「鎖定單一配色」，
+   不再保留 terminal / hazard 變體。若日後想要切換皮膚，再加：
+   [data-theme="terminal"] { --color-accent: #38BDF8; … } 即可。 */
 
-body { background: var(--bg); color: var(--color-ink); }
+/* ---------------------------------------------------------------------
+   ③ base reset + body
+   --------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}

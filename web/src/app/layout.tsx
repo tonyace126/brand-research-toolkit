@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./ci-core.css";
 
 export const metadata: Metadata = {
   title: "羅德島總控",
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hant" data-theme="vanguard" className="h-full antialiased">
-      <body className="relative flex min-h-full flex-col">{children}</body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }

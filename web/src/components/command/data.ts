@@ -1,49 +1,30 @@
-// 羅德島總控 // 資料型別與範例資料
-// 把 rhodesData 換成你線上 app 的真實資料即可（型別已定義好）。
+// =====================================================================
+// 羅德島總控 // data.ts —— 型別 + 資料
+// 線上畫面由 page.tsx 傳入的 Notion live 資料覆蓋；以下 RC_DATA 僅為
+// 佔位範例（公開 repo，不放任何真實客戶資料）。
+// =====================================================================
 
-export type Priority = "高" | "中" | "低";
-
-export interface ProjectItem {
-  code: string;
-  client: string;
-  tag: string;        // 客戶代號徽記（2–4 字）
-  priority: Priority;
-  title: string;
-  status: string;     // 例：進行中 / 待啟動 / 驗收中
-  progress: number;   // 0–100
-  next: string;       // 下個關鍵日（"—" 表未定）
-  launch: string;     // 上線日
-  pin: string;        // 釘選備註
+export interface Project {
+  code: string; client: string; tag: string; priority: string;
+  title: string; status: string; progress: number;
+  next: string; launch: string; pin: string;
 }
+export interface TaskItem { title: string; meta: string; due: string; hot: boolean; }
+export interface Operator { name: string; role: string; idx: string; state: string; }
 
-export interface TaskItem {
-  title: string;
-  meta: string;       // 例：DEMO-01 · 示範客戶 A · 我方承諾
-  due: string;        // "5 天後" 或 "2026-06-11"
-  hot: boolean;       // 是否為重點（藍點 vs 灰點）
-}
-
-export interface OperatorItem {
-  name: string;
-  role: string;       // 英文職稱（大寫）
-  idx: string;        // 編號 "01"…
-  state: string;      // 例：待命 / 作戰中
-}
-
-export interface RhodesData {
+export interface CommandData {
   syncDate: string;
   flavor: string;
   stats: { total: number; active: number; overdue: number; readiness: number };
   due7: number;
-  projects: ProjectItem[];
+  projects: Project[];
   tasks: { within7: TaskItem[]; later: TaskItem[] };
   advisory: string[];
-  operators: OperatorItem[];
+  operators: Operator[];
   operatorFlow: string;
 }
 
-export const rhodesData: RhodesData = {
-  // 註：此範例為佔位資料（repo 為公開）。實際畫面由 page.tsx 傳入的 Notion live 資料覆蓋。
+export const RC_DATA: CommandData = {
   syncDate: "2026-01-01",
   flavor: "別皺眉，東尼大木博士。情勢仍在掌控之中——確認過，就繼續前進。",
   stats: { total: 3, active: 3, overdue: 0, readiness: 40 },
@@ -83,6 +64,5 @@ export const rhodesData: RhodesData = {
     { name: "導演", role: "DIRECTOR", idx: "07", state: "待命" },
     { name: "剪輯", role: "EDITOR", idx: "08", state: "待命" },
   ],
-  operatorFlow:
-    "菁英幹員編制：需求 → 規劃 → 開發 → 審查 → 驗收（＋企劃 → 導演 → 剪輯）。博士，下達指令即可調度幹員——說「我要加一個功能…」或「我要做一支影片…」，幹員就位。",
+  operatorFlow: "菁英幹員編制：需求 → 規劃 → 開發 → 審查 → 驗收（＋企劃 → 導演 → 剪輯）。博士，下達指令即可調度幹員——說「我要加一個功能…」或「我要做一支影片…」，幹員就位。",
 };

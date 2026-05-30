@@ -1,0 +1,254 @@
+/* =====================================================================
+   羅德島總控 // ci-core.css  —  CI 元件樣式層（HUD）
+   依賴 globals.css 的 @theme 變數。放 app/ci-core.css，於 globals.css
+   底部 @import "./ci-core.css";  或在 layout 直接 import。
+   ★ 與預覽版差異：移除了瀏覽器預覽用的 :root 鏡像與 theme 變體
+     （Next.js 由 @theme 提供變數），其餘 1:1 相同。
+   ===================================================================== */
+
+/* ---- 全頁 HUD 背景：細網格 + 半色調網點 + 色暈 + 暈影 ---- */
+.hud-bg::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    linear-gradient(var(--hud-grid) 1px, transparent 1px) 0 0 / 100% 27px,
+    linear-gradient(90deg, var(--hud-grid) 1px, transparent 1px) 0 0 / 27px 100%,
+    linear-gradient(var(--hud-grid-strong) 1px, transparent 1px) 0 0 / 100% 162px,
+    linear-gradient(90deg, var(--hud-grid-strong) 1px, transparent 1px) 0 0 / 162px 100%,
+    radial-gradient(110% 70% at 84% -12%, color-mix(in srgb, var(--color-cyan) 12%, transparent), transparent 58%),
+    radial-gradient(85% 60% at -8% 112%, color-mix(in srgb, var(--color-danger) 9%, transparent), transparent 55%),
+    radial-gradient(70% 50% at 50% 50%, color-mix(in srgb, var(--color-accent) 4%, transparent), transparent 70%);
+  -webkit-mask: radial-gradient(150% 125% at 50% -8%, #000 46%, rgba(0,0,0,.35) 100%);
+          mask: radial-gradient(150% 125% at 50% -8%, #000 46%, rgba(0,0,0,.35) 100%);
+}
+.hud-bg::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(var(--hud-dot) 1px, transparent 1.6px) 0 0 / 6px 6px;
+  -webkit-mask:
+    radial-gradient(60% 55% at 100% 100%, #000, transparent 72%),
+    radial-gradient(55% 45% at 0% 100%, #000, transparent 72%),
+    radial-gradient(45% 40% at 100% 0%, #000, transparent 70%);
+          mask:
+    radial-gradient(60% 55% at 100% 100%, #000, transparent 72%),
+    radial-gradient(55% 45% at 0% 100%, #000, transparent 72%),
+    radial-gradient(45% 40% at 100% 0%, #000, transparent 70%);
+  opacity: .9;
+}
+.hud-bg > * { position: relative; z-index: 1; }
+
+/* 巨大幽靈浮水印字（章節背景） */
+.ghost-title {
+  position: absolute; left: -2px; bottom: -.18em; z-index: 0; pointer-events: none;
+  font-family: var(--font-display); font-weight: 700; font-style: italic;
+  font-size: clamp(90px, 15vw, 220px); line-height: .8; letter-spacing: -.03em;
+  color: rgba(233,235,239,.014); -webkit-text-stroke: 1px rgba(233,235,239,.05);
+  text-transform: uppercase; white-space: nowrap; user-select: none;
+}
+
+/* =====================================================================
+   PANEL —— 面板 / 卡片
+   ===================================================================== */
+.panel {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+.panel.cut {
+  border: 0;
+  background: var(--color-line);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.panel.cut::before {
+  content: ""; position: absolute; inset: 1px; z-index: 0;
+  background: var(--color-surface);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.panel.cut > * { position: relative; z-index: 1; }
+
+.panel.hud { --bracket: rgba(233,235,239,.28); --arm: 15px; --thick: 1.5px; }
+.panel.hud::after {
+  content: ""; position: absolute; inset: -1px; z-index: 2; pointer-events: none;
+  background:
+    linear-gradient(var(--bracket),var(--bracket)) 0 0/var(--arm) var(--thick) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 0 0/var(--thick) var(--arm) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 0/var(--arm) var(--thick) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 0/var(--thick) var(--arm) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 0 100%/var(--arm) var(--thick) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 0 100%/var(--thick) var(--arm) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 100%/var(--arm) var(--thick) no-repeat,
+    linear-gradient(var(--bracket),var(--bracket)) 100% 100%/var(--thick) var(--arm) no-repeat;
+}
+.panel.hud.is-accent { --bracket: var(--color-accent); }
+.panel.hud.is-cyan   { --bracket: var(--color-cyan); }
+.panel.hud.is-danger { --bracket: var(--color-danger); }
+
+.panel .topline {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 3;
+  background: var(--color-cyan);
+}
+.panel .topline.accent { background: var(--color-accent); box-shadow: 0 0 12px -2px var(--color-accent); }
+.panel .topline.danger { background: var(--color-danger); box-shadow: 0 0 12px -2px var(--color-danger); }
+
+/* =====================================================================
+   互動 INTERACTION —— 懸停浮起 / 點亮 / 光澤掃過
+   ===================================================================== */
+.ix {
+  transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease,
+              background-color .22s ease, border-color .22s ease;
+  will-change: transform;
+}
+.ix:hover { transform: translateY(-4px); }
+.ix:active { transform: translateY(-1px); }
+.panel.ix:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-line));
+  box-shadow: 0 22px 48px -26px #000, var(--glow-accent);
+}
+.panel.cut.ix:hover { background: color-mix(in srgb, var(--color-accent) 60%, var(--color-line)); }
+.panel.cut.ix::before { transition: background-color .22s ease; }
+.panel.cut.ix:hover::before { background: color-mix(in srgb, var(--color-surface) 90%, var(--color-accent)); }
+.panel.hud.ix { transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease; }
+.panel.hud.ix::after { transition: background .22s ease; }
+.panel.hud.ix:hover { --bracket: var(--color-accent); box-shadow: 0 22px 48px -26px #000; }
+
+.sheen { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+.sheen::before {
+  content: ""; position: absolute; top: -20%; left: -70%; width: 45%; height: 140%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+  transition: left .55s cubic-bezier(.2,.7,.2,1);
+}
+.ix:hover .sheen::before { left: 135%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ix, .ix:hover, .ix:active { transition: none; transform: none; }
+  .sheen::before { transition: none; }
+}
+
+/* =====================================================================
+   HAZARD —— 危險斜紋
+   ===================================================================== */
+.hazard { background: repeating-linear-gradient(-45deg, var(--hazard-a) 0 13px, var(--hazard-b) 13px 26px); }
+.hazard-strip { height: 8px; }
+.hazard-soft { opacity: .85; }
+
+/* =====================================================================
+   TYPOGRAPHY
+   ===================================================================== */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--color-cyan); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--color-cyan);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-cyan) 60%, transparent);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-cyan) 55%, transparent); }
+  70% { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.h-hero {
+  font-family: var(--font-body); font-weight: 900; line-height: .98;
+  font-size: clamp(40px, 6vw, 84px); letter-spacing: .01em; margin: 0;
+  display: flex; align-items: center; gap: clamp(12px, 1.6vw, 24px);
+}
+.slash {
+  font-family: var(--font-display); font-weight: 700; font-style: italic;
+  color: var(--color-accent); font-size: clamp(36px, 5.4vw, 76px); letter-spacing: -.04em;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; }
+.sec-head .bar { width: 4px; height: 18px; background: var(--color-accent); align-self: center; }
+.sec-head h2 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: .02em; }
+.sec-head .en {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .18em;
+  color: var(--color-muted); text-transform: uppercase;
+}
+.sec-head .en::before { content: "// "; color: var(--color-cyan); }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--color-muted); }
+
+/* =====================================================================
+   STAT / TAG / BUTTON / SEG / PROGRESS / RING
+   ===================================================================== */
+.stat { padding: 14px 16px; min-width: 92px; }
+.stat .num {
+  font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1;
+  color: var(--color-ink); font-variant-numeric: tabular-nums;
+}
+.stat .num.accent { color: var(--color-accent); }
+.stat .num.danger { color: var(--color-danger); }
+.stat .lbl { margin-top: 7px; font-size: 12.5px; color: var(--color-muted); letter-spacing: .04em; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .08em;
+  text-transform: uppercase; padding: 4px 9px; line-height: 1;
+  color: var(--color-ink); background: rgba(255,255,255,.05); border: 1px solid var(--color-line);
+  clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)),
+                     calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+}
+.tag::before { content: ""; width: 6px; height: 6px; background: currentColor; flex: none; }
+.tag.active { color: var(--color-accent); background: var(--color-accent-soft); border-color: color-mix(in srgb, var(--color-accent) 35%, transparent); }
+.tag.cyan   { color: var(--color-cyan);  background: var(--color-cyan-soft);  border-color: color-mix(in srgb, var(--color-cyan) 35%, transparent); }
+.tag.danger { color: var(--color-danger); background: rgba(255,77,79,.12); border-color: color-mix(in srgb, var(--color-danger) 40%, transparent); }
+.tag.idle   { color: var(--color-muted); }
+
+.btn {
+  font-family: var(--font-body); font-weight: 700; font-size: 15px;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 11px 20px; line-height: 1; color: var(--color-ink);
+  background: rgba(255,255,255,.04); border: 1px solid var(--color-line);
+  clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)),
+                     calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+  transition: background .14s, color .14s, box-shadow .14s, transform .05s;
+}
+.btn:hover { background: rgba(255,255,255,.08); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { color: #0A0B0E; background: var(--color-accent); border-color: transparent; box-shadow: var(--glow-accent); }
+.btn.primary:hover { background: color-mix(in srgb, var(--color-accent) 88%, #fff); }
+.btn.ghost { background: transparent; }
+.btn .kbd { font-family: var(--font-mono); font-size: 11px; opacity: .7; }
+
+.seg { display: inline-flex; gap: 6px; padding: 5px; background: rgba(255,255,255,.03); border: 1px solid var(--color-line); }
+.seg button {
+  font-family: var(--font-body); font-weight: 700; font-size: 14.5px;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 9px 16px; color: var(--color-muted); background: transparent; border: 0;
+  clip-path: polygon(var(--cut-sm) 0, 100% 0, 100% calc(100% - var(--cut-sm)),
+                     calc(100% - var(--cut-sm)) 100%, 0 100%, 0 var(--cut-sm));
+  transition: color .14s, background .14s;
+}
+.seg button[aria-selected="true"] { color: #0A0B0E; background: var(--color-accent); box-shadow: var(--glow-accent); }
+.seg button:not([aria-selected="true"]):hover { color: var(--color-ink); background: rgba(255,255,255,.05); }
+
+.bar { position: relative; height: 6px; background: rgba(255,255,255,.06); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--color-accent); box-shadow: 0 0 10px -1px var(--color-accent); position: relative; }
+.bar > i::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, rgba(0,0,0,.18) 0 5px, transparent 5px 10px); }
+.bar.cyan > i { background: var(--color-cyan); box-shadow: 0 0 10px -1px var(--color-cyan); }
+
+.ring { position: relative; width: 148px; aspect-ratio: 1; }
+.ring .dial {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(var(--color-accent) calc(var(--p,40) * 1%), rgba(255,255,255,.07) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent 61%, #000 62%);
+          mask: radial-gradient(farthest-side, transparent 61%, #000 62%);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-accent) 40%, transparent));
+}
+.ring .ticks {
+  position: absolute; inset: 8px; border-radius: 50%;
+  background: repeating-conic-gradient(var(--color-line) 0 1deg, transparent 1deg 9deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent 70%, #000 72%, #000 78%, transparent 80%);
+          mask: radial-gradient(farthest-side, transparent 70%, #000 72%, #000 78%, transparent 80%);
+}
+.ring .val { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.ring .val b { font-family: var(--font-display); font-weight: 700; font-size: 32px; color: var(--color-ink); }
+
+.row { display: flex; align-items: center; }
+.divider { height: 1px; background: var(--color-line); border: 0; }
+.corner-ticks { font-family: var(--font-mono); font-size: 10.5px; color: var(--color-muted); letter-spacing: .12em; }

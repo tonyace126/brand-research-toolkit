@@ -1,11 +1,6 @@
-import RhodesCommand from "@/components/RhodesCommand";
-import { rhodesData } from "@/components/data";
-import type {
-  RhodesData,
-  ProjectItem,
-  TaskItem,
-  Priority as RcPriority,
-} from "@/components/data";
+import CommandCenter from "@/components/command/CommandCenter";
+import { RC_DATA } from "@/components/command/data";
+import type { CommandData, Project as RcProject, TaskItem } from "@/components/command/data";
 import { getPortfolio } from "@/lib/notion";
 import type { Portfolio, Project, Reminder } from "@/lib/types";
 
@@ -38,11 +33,6 @@ function tagOf(p: Project): string {
   return base.slice(0, 4).toUpperCase();
 }
 
-/** 把 Notion 優先級對齊元件型別 */
-function prio(p: Project["priority"]): RcPriority {
-  return p === "高" || p === "中" || p === "低" ? p : "中";
-}
-
 /** 天數差（截止日相對今天，可為負＝逾期） */
 function daysUntil(due: string, todayMs: number): number {
   const d = Date.parse(due);
@@ -62,17 +52,17 @@ function reminderMeta(r: Reminder): string {
   return [r.project, r.client, r.type].filter(Boolean).join(" · ");
 }
 
-/** Portfolio（Notion）→ RhodesData（元件） */
-function toRhodes(pf: Portfolio): RhodesData {
+/** Portfolio（Notion）→ CommandData（元件） */
+function toCommand(pf: Portfolio): CommandData {
   // pf.today 為 "YYYY-MM-DD"（UTC 午夜）；非 live 時可能是 "—"，退回今日
   const parsed = Date.parse(pf.today);
   const base = Number.isNaN(parsed) ? Date.now() : parsed;
 
-  const projects: ProjectItem[] = pf.projects.map((p) => ({
+  const projects: RcProject[] = pf.projects.map((p) => ({
     code: p.code,
     client: p.client || "—",
     tag: tagOf(p),
-    priority: prio(p.priority),
+    priority: p.priority,
     title: p.name,
     status: p.stage,
     progress: p.completion,
@@ -123,12 +113,12 @@ function toRhodes(pf: Portfolio): RhodesData {
     tasks: { within7, later },
     advisory,
     // 幹員編制為固定設定，沿用設計稿
-    operators: rhodesData.operators,
-    operatorFlow: rhodesData.operatorFlow,
+    operators: RC_DATA.operators,
+    operatorFlow: RC_DATA.operatorFlow,
   };
 }
 
 export default async function Page() {
   const pf = await getPortfolio();
-  return <RhodesCommand data={toRhodes(pf)} />;
+  return <CommandCenter data={toCommand(pf)} />;
 }
