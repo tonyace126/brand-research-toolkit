@@ -68,7 +68,8 @@ function toRhodes(pf: Portfolio): RhodesData {
     progress: p.completion,
     next: p.nextDue || "—",
     launch: p.launch || "—",
-    pin: p.risk && p.risk !== "—" ? p.risk : p.thisWeek && p.thisWeek !== "—" ? p.thisWeek : "—",
+    // 卡片底部 note：改顯示「下個關鍵里程碑事項」（取代舊的風險警示/本週要做自由文字雜筆記）。
+    pin: p.nextLabel || "",
     url: p.url || "#",
     needsSchedule: p.needsSchedule,
   }));
