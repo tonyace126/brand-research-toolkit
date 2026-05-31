@@ -143,109 +143,42 @@ async function notion(path: string, body: unknown, token: string) {
   return res.json();
 }
 
-/** GET 版（讀 block children）。權限不足/404 一律回 null → 呼叫端 graceful fallback。 */
-async function notionGet(path: string, token: string) {
-  try {
-    const res = await fetch(API + path, {
-      headers: { Authorization: `Bearer ${token}`, "Notion-Version": NOTION_VERSION },
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-/** Notion URL / ID → 連字號 UUID（抓 32 hex）。抓不到回 null。 */
-function extractPageId(url: string | null): string | null {
-  if (!url) return null;
-  const m = url.match(/[0-9a-f]{32}/i) ||
-    url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-  if (!m) return null;
-  const h = m[0].replace(/-/g, "");
-  if (h.length !== 32) return null;
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
-}
-
-/**
- * 解析里程碑日期文字 → 代表日(ms)。容忍各頁格式不一：
- * 「2026/5/14」「2026-06-18」「6/5 前」「6/8 那週」「6/10–6/11」「2026/7/3 08:00」「展覽(7/3-7/5)」。
- * 範圍/多日期取最早（里程碑起點）；純文字無日期回 NaN（該列略過）。
- */
-function parseMilestoneDate(text: string, year: number): number {
-  const ymd = [...text.matchAll(/(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})/g)]
-    .map((m) => Date.UTC(+m[1], +m[2] - 1, +m[3])).filter((n) => !Number.isNaN(n));
-  if (ymd.length) return Math.min(...ymd);
-  // M/D（時間 08:00 因含冒號被排除；避免吃到 YYYY 片段用負向）
-  const md = [...text.matchAll(/(?<![\d:])(\d{1,2})\/(\d{1,2})(?![\d:])/g)]
-    .map((m) => Date.UTC(year, +m[1] - 1, +m[2])).filter((n) => !Number.isNaN(n));
-  return md.length ? Math.min(...md) : NaN;
-}
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const cellsOf = (row: any): string[] =>
-  (row?.table_row?.cells ?? []).map((c: any) => c.map((x: any) => x.plain_text).join("").trim());
-
+interface MilestoneAgg { ms: Milestones; nextDue: string | null; nextLabel: string | null; nextMs: number; }
 /**
- * 跟著「專案頁面」抓頁面內「專案里程碑」表 → 里程碑統計 + 下個關鍵(日期文字+事項)。
- * - 靠表頭名稱定位「日期」「事項」欄（不靠固定欄序，吃各頁不一致結構）。
- * - 完成判定：該列含 ✅ 或 代表日 < 今天 → 已完成。
- * - 讀不到（整合無權限/無表/無日期列）回 null → 走原 DB 邏輯。
+ * 讀「全專案里程碑總表」(單一真實源) → 每專案的里程碑統計 + 下個關鍵(日期+事項)。
+ * 完成判定：狀態=「已完成」或日期已過。整合無權限/找不到 DB 時上層 catch → 走原 DB 邏輯。
+ * 取代舊版「逐頁爬 table block」——總表結構統一，不怕各頁命名/欄序不一、不怕子頁 404。
  */
-async function fetchMilestoneTable(
-  pageId: string, token: string, todayMs: number, year: number,
-): Promise<{ ms: Milestones; nextDue: string | null; nextLabel: string | null } | null> {
-  const top = await notionGet(`/blocks/${pageId}/children?page_size=100`, token);
-  if (!top?.results) return null;
-  let tableId: string | null = null;
-  let underMilestone = false;
-  for (const b of top.results as any[]) {
-    const t: string = b.type;
-    if (t.startsWith("heading")) {
-      const txt = (b[t]?.rich_text ?? []).map((x: any) => x.plain_text).join("");
-      // 各頁命名不一：有的叫「專案里程碑」、有的叫「開發時程」→ 兩種都認。
-      underMilestone = txt.includes("里程碑") || txt.includes("開發時程");
-    } else if (t === "table" && underMilestone) {
-      tableId = b.id;
-      break;
-    }
-  }
-  if (!tableId) return null;
-
-  const rowsRes = await notionGet(`/blocks/${tableId}/children?page_size=100`, token);
-  const rows = (rowsRes?.results ?? []) as any[];
-  if (rows.length < 2) return null;
-
-  const header = cellsOf(rows[0]);
-  // 各頁表頭命名不一：日期欄可能叫「日期」或「時間」；事項欄可能叫「事項」「內容」「項目」。
-  let dateCol = header.findIndex((h) => h.includes("日期") || h.includes("時間"));
-  const taskCol = header.findIndex((h) => h.includes("事項") || h.includes("內容") || h.includes("項目"));
-  if (dateCol < 0) dateCol = 0;
-
-  const ms: Milestones = { total: 0, done: 0, lastDone: NaN, nextUndone: NaN };
-  let nextDue: string | null = null;
-  let nextLabel: string | null = null;
-  let nextMs = Number.POSITIVE_INFINITY;
-  for (let i = 1; i < rows.length; i++) {
-    const cells = cellsOf(rows[i]);
-    const dtxt = cells[dateCol] ?? "";
-    const dms = parseMilestoneDate(dtxt, year);
-    if (Number.isNaN(dms)) continue; // 無日期 → 略過
-    let label = taskCol >= 0 ? (cells[taskCol] ?? "") : "";
-    if (!label) label = cells.filter((_, idx) => idx !== dateCol).sort((a, b) => b.length - a.length)[0] || "";
-    const done = cells.join(" ").includes("✅") || dms < todayMs;
-    ms.total += 1;
+async function fetchMilestonesDb(
+  id2code: Record<string, string>, token: string, todayMs: number,
+): Promise<Record<string, MilestoneAgg>> {
+  const dbId = process.env.NOTION_MILESTONES_DB || (await findDb("里程碑總表", token));
+  const rows = await queryAll(dbId, token);
+  const byCode: Record<string, MilestoneAgg> = {};
+  for (const r of rows) {
+    const pr = (r as any).properties;
+    const code = pRel(pr, "專案").map((id) => id2code[id]).find(Boolean);
+    if (!code) continue;
+    const dueIso = pDate(pr, "日期");
+    const dueMs = dueIso ? Date.parse(dueIso) : NaN;
+    if (Number.isNaN(dueMs)) continue;
+    const done = pChoice(pr, "狀態") === "已完成" || dueMs < todayMs;
+    const label = pTitle(pr, "事項");
+    const e = byCode[code] ?? (byCode[code] = {
+      ms: { total: 0, done: 0, lastDone: NaN, nextUndone: NaN },
+      nextDue: null, nextLabel: null, nextMs: Number.POSITIVE_INFINITY,
+    });
+    e.ms.total += 1;
     if (done) {
-      ms.done += 1;
-      ms.lastDone = Number.isNaN(ms.lastDone) ? dms : Math.max(ms.lastDone, dms);
+      e.ms.done += 1;
+      e.ms.lastDone = Number.isNaN(e.ms.lastDone) ? dueMs : Math.max(e.ms.lastDone, dueMs);
     } else {
-      ms.nextUndone = Number.isNaN(ms.nextUndone) ? dms : Math.min(ms.nextUndone, dms);
-      if (dms < nextMs) { nextMs = dms; nextDue = dtxt; nextLabel = label; }
+      e.ms.nextUndone = Number.isNaN(e.ms.nextUndone) ? dueMs : Math.min(e.ms.nextUndone, dueMs);
+      if (dueMs < e.nextMs) { e.nextMs = dueMs; e.nextDue = dueIso; e.nextLabel = label; }
     }
   }
-  if (ms.total === 0) return null;
-  return { ms, nextDue, nextLabel };
+  return byCode;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -351,21 +284,21 @@ export async function getPortfolio(): Promise<Portfolio> {
     }
     reminders.sort((a, b) => a.due.localeCompare(b.due));
 
-    // 第 2.5 趟：跟著「專案頁面」抓頁內「專案里程碑」表（並行）。成功則覆蓋里程碑統計、
-    // 帶出下個關鍵(日期+事項)。整合對該頁無權限(404)時 fetchMilestoneTable 回 null → 保持原 DB 邏輯。
-    const year = new Date(todayMs).getUTCFullYear();
-    const mtResults = await Promise.all(projects.map((p) => {
-      const pid = extractPageId(p.url);
-      return pid ? fetchMilestoneTable(pid, token, todayMs, year) : Promise.resolve(null);
-    }));
-    projects.forEach((p, i) => {
-      const mt = mtResults[i];
-      if (!mt) return;
-      milestones[p.code] = mt.ms;            // 里程碑表優先於追蹤事項庫統計
-      p.fromMilestoneTable = true;
-      if (mt.nextDue) p.nextDue = mt.nextDue;
-      p.nextLabel = mt.nextLabel;
-    });
+    // 第 2.5 趟：讀「全專案里程碑總表」(單一真實源) 覆蓋里程碑統計 + 下個關鍵。
+    // 讀失敗（無權限/找不到 DB）→ catch 後沿用原 DB / 追蹤事項庫邏輯，畫面不壞。
+    try {
+      const mdb = await fetchMilestonesDb(id2code, token, todayMs);
+      projects.forEach((p) => {
+        const e = mdb[p.code];
+        if (!e || e.ms.total === 0) return;
+        milestones[p.code] = e.ms;          // 總表優先於追蹤事項庫統計
+        p.fromMilestoneTable = true;
+        if (e.nextDue) p.nextDue = e.nextDue;
+        p.nextLabel = e.nextLabel;
+      });
+    } catch (e) {
+      console.error("里程碑總表讀取失敗，沿用原邏輯:", e);
+    }
 
     // 第 3 趟：回填完成度 + 缺時間提醒旗標。
     for (const p of projects) {
