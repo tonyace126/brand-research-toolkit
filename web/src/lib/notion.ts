@@ -14,24 +14,31 @@ function prio(name?: string | null): Priority {
 }
 
 /**
- * 完成度自動估算（Notion 沒有進度欄位 → 依時程推算，免人工維護）。
+ * 完成度自動估算（Notion 沒有進度欄位 → 依「對客戶時程」推算，免人工維護）。
+ * 概念：以專案啟動 → 對客戶最終時間點（交付/上線/活動結束）為 0→100% 區間，看今天落點。
  * - 未開始：0%
- * - 進行中：今天落在「Brief 收件日 → 預計上線」區間的比例，clamp 8%~92%
- *   （上線日缺 → 退用「下個關鍵期限」當終點；日期不足 → 退回 40 估值）
+ * - 進行中：今天落在「起點 → 終點」的比例，clamp 8%~92%
+ *   - 起點：Brief 收件日 → 缺則用 Notion 頁面建立時間（= 製作當下/啟動）
+ *   - 終點：預計上線 → 缺則用 下個關鍵期限
+ *   - 起點/終點都湊不齊（極少數）→ 退回 40 概略值
  * 會隨時間自然推進，改日期即時反映。
  */
 function estimateCompletion(
-  stage: Stage, brief: string | null, launch: string | null, nextDue: string | null, todayMs: number,
+  stage: Stage, brief: string | null, launch: string | null,
+  nextDue: string | null, created: string | null, todayMs: number,
 ): number {
   if (stage === "未開始") return 0;
-  const start = brief ? Date.parse(brief) : NaN;
-  const endRaw = launch ? Date.parse(launch) : NaN;
-  const end = Number.isNaN(endRaw) ? (nextDue ? Date.parse(nextDue) : NaN) : endRaw;
+  const briefMs = brief ? Date.parse(brief) : NaN;
+  const createdMs = created ? Date.parse(created) : NaN;
+  const start = !Number.isNaN(briefMs) ? briefMs : createdMs; // 起點：Brief 收件日 ?? 建立時間
+  const launchMs = launch ? Date.parse(launch) : NaN;
+  const nextMs = nextDue ? Date.parse(nextDue) : NaN;
+  const end = !Number.isNaN(launchMs) ? launchMs : nextMs;     // 終點：預計上線 ?? 下個關鍵期限
   if (!Number.isNaN(start) && !Number.isNaN(end) && end > start) {
     const p = ((todayMs - start) / (end - start)) * 100;
     return Math.max(8, Math.min(92, Math.round(p)));
   }
-  return 40; // 日期不足 → 維持舊的概略估值
+  return 40; // 日期都湊不齊 → 維持舊的概略估值
 }
 
 // ---- Notion property getters ----
@@ -110,10 +117,11 @@ export async function getPortfolio(): Promise<Portfolio> {
       const brief = pDate(pr, "Brief 收件日");
       const nextDue = pDate(pr, "下個關鍵期限");
       const launch = pDate(pr, "預計上線");
+      const created: string | null = pg.created_time ?? null; // 頁面建立時間（製作 Notion 當下 = 啟動）
       projects.push({
         code, icon: pIcon(pg), client: pChoice(pr, "客戶") || "",
         name: pText(pr, "專案名稱") || code, stage, priority: prio(pChoice(pr, "優先級")),
-        completion: estimateCompletion(stage, brief, launch, nextDue, todayMs), openItems: 0,
+        completion: estimateCompletion(stage, brief, launch, nextDue, created, todayMs), openItems: 0,
         brief, nextDue, launch,
         thisWeek: pText(pr, "本週要做") || "—", risk: pText(pr, "風險警示") || "—",
         url: pUrl(pr, "專案頁面") || `https://www.notion.so/${pg.id.replace(/-/g, "")}`,
