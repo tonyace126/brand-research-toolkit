@@ -13,6 +13,27 @@ function prio(name?: string | null): Priority {
   return "中";
 }
 
+/**
+ * 完成度自動估算（Notion 沒有進度欄位 → 依時程推算，免人工維護）。
+ * - 未開始：0%
+ * - 進行中：今天落在「Brief 收件日 → 預計上線」區間的比例，clamp 8%~92%
+ *   （上線日缺 → 退用「下個關鍵期限」當終點；日期不足 → 退回 40 估值）
+ * 會隨時間自然推進，改日期即時反映。
+ */
+function estimateCompletion(
+  stage: Stage, brief: string | null, launch: string | null, nextDue: string | null, todayMs: number,
+): number {
+  if (stage === "未開始") return 0;
+  const start = brief ? Date.parse(brief) : NaN;
+  const endRaw = launch ? Date.parse(launch) : NaN;
+  const end = Number.isNaN(endRaw) ? (nextDue ? Date.parse(nextDue) : NaN) : endRaw;
+  if (!Number.isNaN(start) && !Number.isNaN(end) && end > start) {
+    const p = ((todayMs - start) / (end - start)) * 100;
+    return Math.max(8, Math.min(92, Math.round(p)));
+  }
+  return 40; // 日期不足 → 維持舊的概略估值
+}
+
 // ---- Notion property getters ----
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const pTitle = (p: any, k: string) => (p[k]?.title ?? []).map((t: any) => t.plain_text).join("") || "";
@@ -77,6 +98,7 @@ export async function getPortfolio(): Promise<Portfolio> {
     const taskDb = process.env.NOTION_TASKS_DB || (await findDb("追蹤事項庫", token));
     const [projRows, taskRows] = await Promise.all([queryAll(projDb, token), queryAll(taskDb, token)]);
 
+    const todayMs = Date.parse(today);
     const id2code: Record<string, string> = {};
     const projects: Project[] = [];
     for (const pg of projRows) {
@@ -85,11 +107,14 @@ export async function getPortfolio(): Promise<Portfolio> {
       if (stage === "完成") continue;
       const code = pTitle(pr, "專案代碼") || pg.id.slice(0, 8);
       id2code[pg.id] = code;
+      const brief = pDate(pr, "Brief 收件日");
+      const nextDue = pDate(pr, "下個關鍵期限");
+      const launch = pDate(pr, "預計上線");
       projects.push({
         code, icon: pIcon(pg), client: pChoice(pr, "客戶") || "",
         name: pText(pr, "專案名稱") || code, stage, priority: prio(pChoice(pr, "優先級")),
-        completion: stage === "未開始" ? 0 : 40, openItems: 0,
-        brief: pDate(pr, "Brief 收件日"), nextDue: pDate(pr, "下個關鍵期限"), launch: pDate(pr, "預計上線"),
+        completion: estimateCompletion(stage, brief, launch, nextDue, todayMs), openItems: 0,
+        brief, nextDue, launch,
         thisWeek: pText(pr, "本週要做") || "—", risk: pText(pr, "風險警示") || "—",
         url: pUrl(pr, "專案頁面") || `https://www.notion.so/${pg.id.replace(/-/g, "")}`,
       });
