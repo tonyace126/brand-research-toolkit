@@ -16,6 +16,7 @@ export interface Project {
   thisWeek: string;
   risk: string;
   url: string;
+  needsSchedule: boolean; // 終點時間三層全缺 → 總控標記提醒補
 }
 
 export interface Reminder {

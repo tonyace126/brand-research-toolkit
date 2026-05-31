@@ -70,6 +70,7 @@ function toRhodes(pf: Portfolio): RhodesData {
     launch: p.launch || "—",
     pin: p.risk && p.risk !== "—" ? p.risk : p.thisWeek && p.thisWeek !== "—" ? p.thisWeek : "—",
     url: p.url || "#",
+    needsSchedule: p.needsSchedule,
   }));
 
   const within7: TaskItem[] = [];

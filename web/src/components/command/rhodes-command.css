@@ -304,6 +304,15 @@
 .pcard .pfoot { display: flex; justify-content: flex-end; margin-top: 14px; }
 .pcard .notion { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-cyan); cursor: pointer; letter-spacing: .04em; text-decoration: none; }
 .pcard .notion.is-off { color: var(--color-muted); cursor: default; opacity: .55; }
+.pcard .sched-warn {
+  display: flex; align-items: center; gap: 7px; margin-top: 10px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .03em;
+  color: var(--color-warning);
+}
+.pcard .sched-warn .wt {
+  width: 6px; height: 6px; background: var(--color-warning); transform: rotate(45deg);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-warning) 70%, transparent);
+}
 
 /* bottom two panels */
 .bottom { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }

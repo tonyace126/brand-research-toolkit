@@ -70,6 +70,7 @@ function Overview({ data: D }: { data: RhodesData }) {
               <span className="tag active">{p.status}</span>
               <div className="pbarlbl">完成度 {p.progress}%（估）</div>
               <div className="bar"><i style={{ width: `${p.progress}%` }} /></div>
+              {p.needsSchedule ? <div className="sched-warn"><span className="wt" />⚠ 未設預期完成時間</div> : null}
               {(() => {
                 const noNext = isEmptyVal(p.next);
                 const noLaunch = isEmptyVal(p.launch);
