@@ -204,7 +204,8 @@ async function fetchMilestoneTable(
     const t: string = b.type;
     if (t.startsWith("heading")) {
       const txt = (b[t]?.rich_text ?? []).map((x: any) => x.plain_text).join("");
-      underMilestone = txt.includes("里程碑");
+      // 各頁命名不一：有的叫「專案里程碑」、有的叫「開發時程」→ 兩種都認。
+      underMilestone = txt.includes("里程碑") || txt.includes("開發時程");
     } else if (t === "table" && underMilestone) {
       tableId = b.id;
       break;
@@ -217,8 +218,9 @@ async function fetchMilestoneTable(
   if (rows.length < 2) return null;
 
   const header = cellsOf(rows[0]);
-  let dateCol = header.findIndex((h) => h.includes("日期"));
-  const taskCol = header.findIndex((h) => h.includes("事項"));
+  // 各頁表頭命名不一：日期欄可能叫「日期」或「時間」；事項欄可能叫「事項」「內容」「項目」。
+  let dateCol = header.findIndex((h) => h.includes("日期") || h.includes("時間"));
+  const taskCol = header.findIndex((h) => h.includes("事項") || h.includes("內容") || h.includes("項目"));
   if (dateCol < 0) dateCol = 0;
 
   const ms: Milestones = { total: 0, done: 0, lastDone: NaN, nextUndone: NaN };
