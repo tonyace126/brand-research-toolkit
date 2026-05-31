@@ -2,10 +2,13 @@ import RhodesCommand from "@/components/command/RhodesCommand";
 import { RHODES_DATA } from "@/components/command/data";
 import type { RhodesData, ProjectItem, TaskItem } from "@/components/command/data";
 import { getPortfolio } from "@/lib/notion";
+import { headers } from "next/headers";
 import type { Portfolio, Project, Reminder } from "@/lib/types";
 
 // 每次請求都即時連 Notion（不要在 build 時靜態化）
 export const dynamic = "force-dynamic";
+export const revalidate = 0;                // 關掉 ISR（清掉線上預設的 5 分鐘 stale-time 快取）
+export const fetchCache = "force-no-store"; // 所有 fetch 一律不快取，每次重抓 Notion
 
 const DAY = 86_400_000;
 
@@ -111,6 +114,7 @@ function toRhodes(pf: Portfolio): RhodesData {
 }
 
 export default async function Page() {
+  await headers(); // 讀 request-time API → 強制動態渲染，杜絕被靜態預渲染 / CDN 快取（force-dynamic 在線上未生效的保險）
   const pf = await getPortfolio();
   return <RhodesCommand data={toRhodes(pf)} />;
 }
