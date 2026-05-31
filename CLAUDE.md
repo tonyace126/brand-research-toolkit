@@ -29,7 +29,14 @@ lsof -ti:3000 | xargs kill             # 用完關掉
 
 **上線**：build 過 → `git add web/src && git commit && git push origin main`。
 
-**完成度怎麼算**（`web/src/lib/notion.ts`）：里程碑分段+時間插值。起點 Brief收件日→預期時程(起)→建立時間；終點 預計上線→預期時程(迄)→下個關鍵期限。里程碑=追蹤事項庫關聯事項（排除已取消）。終點全缺→卡片紅字「未設預期完成時間」。Notion 專案總表有「預期時程」文字欄可寫「5月開始9月完成」。
+**資料來源（重要，2026-05-31 重構）**：總控有**兩層 Notion DB**——
+1. **「全客戶專案總表」**（決定總控上**有哪幾張卡**）：data source `f7f58c0d-…`／DB `2fbd052d-…`。env `NOTION_PROJECTS_DB`。
+2. **「全專案里程碑總表」**（決定每張卡的**完成度／下個關鍵**）：DB `5b8d9496-…`。env `NOTION_MILESTONES_DB`（未設則 `findDb("里程碑總表")` 自動搜）。每列=一個里程碑，relation 接回專案總表。
+> **新案要上總控 → 兩個 DB 都要建**（只建專案總表卡會出現但無進度；漏建專案總表則整張卡不出現）。建新案用 `notion-project-intake` skill 一鍵建齊。
+
+**完成度怎麼算**（`web/src/lib/notion.ts` 的 `fetchMilestonesDb` + `computeCompletion`）：讀里程碑總表，按 relation 聚合每案里程碑→里程碑分段+時間插值。**完成判定 = 狀態「已完成」或日期已過**。下個關鍵 = 最早未完成里程碑的「日期＋事項」。讀不到（無權限/找不到 DB）→ catch 後沿用追蹤事項庫/DB 日期邏輯，畫面不壞。
+> 舊版是「逐頁爬各專案頁的 table block」，因各頁表頭/heading 命名不一、子頁散在不同樹 404 而放棄，改為總表單一源。
+> ⚠️ 各專案頁的「📅 里程碑」應放**指向里程碑總表的 linked view**（Notion API 不能代建，須手動）；別在 page 內留實體里程碑表（總控已不讀它、會跟總表打架）。
 
 ---
 
