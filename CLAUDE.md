@@ -8,6 +8,31 @@
 
 ---
 
+## 🚀 Claude 快速上手（每次接手先讀這段，免得重新摸索浪費 token）
+
+**位置**：`~/work/brand-research-toolkit`，app 在 `web/`。線上 https://brand-research-toolkit.vercel.app/（Vercel 綁 `main`，push 即自動部署）。
+
+**本地跑 — ⚠️ 非互動 shell 沒有 `pnpm`（corepack shim），別試，直接用專案內 next：**
+```bash
+export PATH="/usr/local/bin:$PATH"     # node/npm 在這
+cd ~/work/brand-research-toolkit/web
+node_modules/.bin/next dev             # dev（讀 .env.local 連真實 Notion）
+node_modules/.bin/next build           # 上線前驗型別
+lsof -ti:3000 | xargs kill             # 用完關掉
+```
+
+**本地驗證（繞密碼門 + 連真實 Notion）：**
+- 起 server 帶臨時密碼：`DASH_PASSWORD=test node_modules/.bin/next dev`
+- 進站：chrome-devtools MCP `new_page` 開 `http://localhost:3000/?k=test`（寫 cookie `bk`）；或 curl 帶 `--cookie "bk=test"`。
+- 驗快取/動態：`curl -sI <線上網址> | grep -iE "cache-control|x-nextjs-prerender|x-vercel-cache"`（要 `no-store`、**不該**有 `prerender`）。
+- ⚠️ 截圖/輸出別讓真實客戶名外洩：驗證時 `document.querySelectorAll('.proj-grid,.bottom').forEach(e=>e.style.visibility='hidden')` 或只截單張卡。
+
+**上線**：build 過 → `git add web/src && git commit && git push origin main`。
+
+**完成度怎麼算**（`web/src/lib/notion.ts`）：里程碑分段+時間插值。起點 Brief收件日→預期時程(起)→建立時間；終點 預計上線→預期時程(迄)→下個關鍵期限。里程碑=追蹤事項庫關聯事項（排除已取消）。終點全缺→卡片紅字「未設預期完成時間」。Notion 專案總表有「預期時程」文字欄可寫「5月開始9月完成」。
+
+---
+
 ## 現況（已上線）
 
 - **明日方舟暗色「先鋒」主題** + **亮白「技術藍圖」主題**，右上角按鈕一鍵切換，選擇存 `localStorage`。
