@@ -72,6 +72,13 @@ function toRhodes(pf: Portfolio): RhodesData {
     pin: p.nextLabel || "",
     url: p.url || "#",
     needsSchedule: p.needsSchedule,
+    milestones: p.milestones.map((m) => ({
+      date: m.date || "",
+      label: m.label,
+      status: m.status,
+      category: m.category,
+      hard: m.hard,
+    })),
   }));
 
   const within7: TaskItem[] = [];

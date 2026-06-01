@@ -3,12 +3,20 @@
 // 線上畫面由 page.tsx 傳入的 Notion live 資料覆蓋；RHODES_DATA 僅為佔位。
 // =====================================================================
 
+export interface MilestoneItem {
+  date: string;     // YYYY-MM-DD（空字串 = 無日期）
+  label: string;    // 事項
+  status: string;   // 未開始 / 進行中 / 已完成
+  category: string; // 對客戶 / 對內 / 對外協力（可空）
+  hard: boolean;    // 硬期限
+}
 export interface ProjectItem {
   code: string; client: string; tag: string; priority: string;
   title: string; status: string; progress: number;
   next: string; launch: string; pin: string;
   url: string; // 該專案的 Notion 頁面連結（"#" 或空 = 無連結）
   needsSchedule: boolean; // true → 卡片顯示「⚠ 未設預期完成時間」
+  milestones: MilestoneItem[]; // 點卡片開「作戰檔案」面板用的里程碑明細
 }
 export interface TaskItem { title: string; meta: string; due: string; hot: boolean; }
 export interface OperatorItem { name: string; role: string; idx: string; state: string; }
@@ -33,13 +41,18 @@ export const RHODES_DATA: RhodesData = {
   projects: [
     { code: "PRJ-A01", client: "示範客戶 A", tag: "A", priority: "高",
       title: "形象短片企劃",
-      status: "進行中", progress: 45, next: "—", launch: "—", pin: "—", url: "#", needsSchedule: false },
+      status: "進行中", progress: 45, next: "—", launch: "—", pin: "—", url: "#", needsSchedule: false, milestones: [
+        { date: "2026-01-08", label: "需求對焦會議", status: "已完成", category: "對客戶", hard: false },
+        { date: "2026-01-20", label: "腳本初稿", status: "進行中", category: "對內", hard: false },
+        { date: "2026-02-01", label: "腳本定稿", status: "未開始", category: "對客戶", hard: true },
+        { date: "2026-02-22", label: "成片交付", status: "未開始", category: "對客戶", hard: true },
+      ] },
     { code: "PRJ-B01", client: "示範客戶 B", tag: "B", priority: "中",
       title: "年度數位企劃",
-      status: "進行中", progress: 40, next: "—", launch: "—", pin: "—", url: "#", needsSchedule: false },
+      status: "進行中", progress: 40, next: "—", launch: "—", pin: "—", url: "#", needsSchedule: false, milestones: [] },
     { code: "PRJ-C01", client: "示範客戶 C", tag: "C", priority: "中",
       title: "公益社群短影音",
-      status: "進行中", progress: 30, next: "2026-02-01", launch: "—", pin: "等 brief", url: "#", needsSchedule: true },
+      status: "進行中", progress: 30, next: "2026-02-01", launch: "—", pin: "等 brief", url: "#", needsSchedule: true, milestones: [] },
   ],
   tasks: {
     within7: [

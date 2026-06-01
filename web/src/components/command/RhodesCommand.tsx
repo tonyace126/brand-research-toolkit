@@ -5,7 +5,7 @@
 // 含主題切換：暗色先鋒 ⇄ 亮白藍圖（寫入 <html data-theme>，存 localStorage）
 // =====================================================================
 import { useEffect, useState, type CSSProperties, type HTMLAttributes, type FC } from "react";
-import { RHODES_DATA, type RhodesData } from "./data";
+import { RHODES_DATA, type RhodesData, type ProjectItem } from "./data";
 import HoloBrief from "./HoloBrief";
 import "./rhodes-command.css";
 
@@ -32,9 +32,64 @@ function Ring({ p, size = 148, big = 32 }: { p: number; size?: number; big?: num
   );
 }
 
+/* 里程碑狀態 → 燈號樣式 class + 符號 */
+function msLight(status: string): { cls: string; sym: string } {
+  if (status === "已完成") return { cls: "done", sym: "✓" };
+  if (status === "進行中") return { cls: "wip", sym: "▶" };
+  return { cls: "todo", sym: "" };
+}
+/* 類別 → 色塊 class（🟥對客戶 / 🟦對內 / 🟧對外協力） */
+function catClass(c: string): string {
+  return c === "對客戶" ? "cat-client"
+    : c === "對內" ? "cat-internal"
+    : c === "對外協力" ? "cat-external" : "cat-none";
+}
+
+/* 作戰檔案：單一專案的里程碑明細面板（點專案卡開啟） */
+function MilestoneDossier({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden"; // 開面板時鎖背景捲動
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+  return (
+    <div className="dossier-overlay" onClick={onClose}>
+      <div className="dossier panel hud is-accent" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <span className="sheen" />
+        <button className="dossier-x" onClick={onClose} aria-label="關閉">✕</button>
+        <div className="dossier-head">
+          <span className="dossier-en">DOSSIER // 作戰檔案</span>
+          <div className="dossier-code">{project.code}</div>
+          <h3>{project.title}</h3>
+          <div className="dossier-sub">{project.client} · 共 {project.milestones.length} 個里程碑</div>
+        </div>
+        <div className="ms-list">
+          {project.milestones.map((m, i) => {
+            const lt = msLight(m.status);
+            return (
+              <div key={i} className={"ms-row " + lt.cls}>
+                <span className="ms-dot">{lt.sym}</span>
+                <span className="ms-date">{m.date || "—"}</span>
+                <span className="ms-label">
+                  {m.label}
+                  {m.hard ? <span className="ms-hard">硬期限</span> : null}
+                </span>
+                {m.category ? <span className={"ms-cat " + catClass(m.category)}>{m.category}</span> : null}
+              </div>
+            );
+          })}
+          {project.milestones.length === 0 ? <div className="ms-empty">尚無里程碑資料</div> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* 作戰總覽 */
 function Overview({ data: D }: { data: RhodesData }) {
   const s = D.stats;
+  const [dossier, setDossier] = useState<ProjectItem | null>(null);
   return (
     <div className="fadein">
       <div className="ov-top">
@@ -58,7 +113,11 @@ function Overview({ data: D }: { data: RhodesData }) {
         <div className="sec-head"><span className="bar" /><h2>作戰專案</h2><span className="en">OPERATIONS</span></div>
         <div className="proj-grid">
           {D.projects.map((p) => (
-            <div key={p.code} className="panel pcard ix">
+            <div
+              key={p.code}
+              className={"panel pcard ix" + (p.milestones.length ? " has-dossier" : "")}
+              onClick={() => p.milestones.length && setDossier(p)}
+            >
               <span className="sheen" />
               <div className="topline accent" />
               <div className="ptop">
@@ -84,10 +143,13 @@ function Overview({ data: D }: { data: RhodesData }) {
               })()}
               {isEmptyVal(p.pin) ? null : <div className="pin"><span className="tk" />{p.pin}</div>}
               <div className="pfoot">
+                {p.milestones.length ? (
+                  <span className="ms-hint">⊕ 調閱 {p.milestones.length} 個里程碑</span>
+                ) : <span />}
                 {isEmptyVal(p.url) || p.url === "#" ? (
                   <span className="notion is-off">Notion —</span>
                 ) : (
-                  <a className="notion" href={p.url} target="_blank" rel="noopener noreferrer">Notion ↗</a>
+                  <a className="notion" href={p.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>Notion ↗</a>
                 )}
               </div>
             </div>
@@ -124,6 +186,7 @@ function Overview({ data: D }: { data: RhodesData }) {
           ))}
         </div>
       </div>
+      {dossier ? <MilestoneDossier project={dossier} onClose={() => setDossier(null)} /> : null}
     </div>
   );
 }

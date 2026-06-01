@@ -1,6 +1,6 @@
 import "server-only";
-import type { Project, Reminder, Portfolio, Priority, Stage } from "./types";
-export type { Project, Reminder, Portfolio, Priority, Stage } from "./types";
+import type { Project, Reminder, Portfolio, Priority, Stage, Milestone } from "./types";
+export type { Project, Reminder, Portfolio, Priority, Stage, Milestone } from "./types";
 
 const API = "https://api.notion.com/v1";
 const NOTION_VERSION = "2022-06-28";
@@ -123,6 +123,7 @@ const pTitle = (p: any, k: string) => (p[k]?.title ?? []).map((t: any) => t.plai
 const pText = (p: any, k: string) => (p[k]?.rich_text ?? []).map((t: any) => t.plain_text).join("") || "";
 const pChoice = (p: any, k: string) => (p[k]?.select ?? p[k]?.status)?.name ?? null;
 const pDate = (p: any, k: string) => p[k]?.date?.start ?? null;
+const pCheck = (p: any, k: string) => p[k]?.checkbox === true;
 const pUrl = (p: any, k: string) => p[k]?.url ?? null;
 const pRel = (p: any, k: string): string[] => (p[k]?.relation ?? []).map((r: any) => r.id);
 const pIcon = (page: any) => (page.icon?.type === "emoji" ? page.icon.emoji : "");
@@ -144,7 +145,7 @@ async function notion(path: string, body: unknown, token: string) {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface MilestoneAgg { ms: Milestones; nextDue: string | null; nextLabel: string | null; nextMs: number; }
+interface MilestoneAgg { ms: Milestones; nextDue: string | null; nextLabel: string | null; nextMs: number; items: Milestone[]; }
 /**
  * 讀「全專案里程碑總表」(單一真實源) → 每專案的里程碑統計 + 下個關鍵(日期+事項)。
  * 完成判定：狀態=「已完成」或日期已過。整合無權限/找不到 DB 時上層 catch → 走原 DB 邏輯。
@@ -163,11 +164,16 @@ async function fetchMilestonesDb(
     const dueIso = pDate(pr, "日期");
     const dueMs = dueIso ? Date.parse(dueIso) : NaN;
     if (Number.isNaN(dueMs)) continue;
-    const done = pChoice(pr, "狀態") === "已完成" || dueMs < todayMs;
+    const status = pChoice(pr, "狀態");
+    const done = status === "已完成" || dueMs < todayMs;
     const label = pTitle(pr, "事項");
     const e = byCode[code] ?? (byCode[code] = {
       ms: { total: 0, done: 0, lastDone: NaN, nextUndone: NaN },
-      nextDue: null, nextLabel: null, nextMs: Number.POSITIVE_INFINITY,
+      nextDue: null, nextLabel: null, nextMs: Number.POSITIVE_INFINITY, items: [],
+    });
+    e.items.push({
+      date: dueIso, label, status: status || "未開始",
+      category: pChoice(pr, "類別") || "", hard: pCheck(pr, "硬期限"),
     });
     e.ms.total += 1;
     if (done) {
@@ -177,6 +183,10 @@ async function fetchMilestonesDb(
       e.ms.nextUndone = Number.isNaN(e.ms.nextUndone) ? dueMs : Math.min(e.ms.nextUndone, dueMs);
       if (dueMs < e.nextMs) { e.nextMs = dueMs; e.nextDue = dueIso; e.nextLabel = label; }
     }
+  }
+  // 每案里程碑依日期升冪排序，供面板時間軸由舊到新呈現。
+  for (const e of Object.values(byCode)) {
+    e.items.sort((a, b) => (a.date ?? "").localeCompare(b.date ?? ""));
   }
   return byCode;
 }
@@ -241,7 +251,7 @@ export async function getPortfolio(): Promise<Portfolio> {
         code, icon: pIcon(pg), client: pChoice(pr, "客戶") || "",
         name: pText(pr, "專案名稱") || code, stage, priority: prio(pChoice(pr, "優先級")),
         completion: 0, openItems: 0, needsSchedule: false,
-        brief, nextDue, nextLabel: null, launch, fromMilestoneTable: false,
+        brief, nextDue, nextLabel: null, launch, fromMilestoneTable: false, milestones: [],
         thisWeek: pText(pr, "本週要做") || "—", risk: pText(pr, "風險警示") || "—",
         url: pUrl(pr, "專案頁面") || `https://www.notion.so/${pg.id.replace(/-/g, "")}`,
       });
@@ -295,6 +305,7 @@ export async function getPortfolio(): Promise<Portfolio> {
         p.fromMilestoneTable = true;
         if (e.nextDue) p.nextDue = e.nextDue;
         p.nextLabel = e.nextLabel;
+        p.milestones = e.items;
       });
     } catch (e) {
       console.error("里程碑總表讀取失敗，沿用原邏輯:", e);
@@ -324,9 +335,14 @@ const SAMPLE: Portfolio = {
   source: "範例資料（未連 Notion）",
   syncedAt: "—", today: "—", live: false,
   projects: [
-    { code: "DEMO-01", icon: "🐾", client: "示範客戶 A", name: "形象短片企劃", stage: "進行中", priority: "高", completion: 45, openItems: 5, needsSchedule: false, brief: "2026-05-14", nextDue: "2026-06-04", nextLabel: "腳本定稿", launch: "2026-07-03", thisWeek: "腳本定稿、確認場景", risk: "拍攝檔期待確認", url: "#", fromMilestoneTable: false },
-    { code: "DEMO-02", icon: "🏦", client: "示範客戶 B", name: "年度數位企劃", stage: "進行中", priority: "中", completion: 30, openItems: 3, needsSchedule: false, brief: "2026-05-13", nextDue: "2026-06-12", nextLabel: "UX 與客戶討論", launch: "2026-08-03", thisWeek: "UX 與客戶討論", risk: "—", url: "#", fromMilestoneTable: false },
-    { code: "DEMO-03", icon: "🩺", client: "示範客戶 C", name: "公益社群短影音", stage: "未開始", priority: "中", completion: 0, openItems: 0, needsSchedule: true, brief: null, nextDue: null, nextLabel: null, launch: null, thisWeek: "等 brief", risk: "—", url: "#", fromMilestoneTable: false },
+    { code: "DEMO-01", icon: "🐾", client: "示範客戶 A", name: "形象短片企劃", stage: "進行中", priority: "高", completion: 45, openItems: 5, needsSchedule: false, brief: "2026-05-14", nextDue: "2026-06-04", nextLabel: "腳本定稿", launch: "2026-07-03", thisWeek: "腳本定稿、確認場景", risk: "拍攝檔期待確認", url: "#", fromMilestoneTable: false, milestones: [
+      { date: "2026-05-14", label: "需求對焦會議", status: "已完成", category: "對客戶", hard: false },
+      { date: "2026-05-26", label: "腳本初稿", status: "進行中", category: "對內", hard: false },
+      { date: "2026-06-04", label: "腳本定稿", status: "未開始", category: "對客戶", hard: true },
+      { date: "2026-07-03", label: "成片交付", status: "未開始", category: "對客戶", hard: true },
+    ] },
+    { code: "DEMO-02", icon: "🏦", client: "示範客戶 B", name: "年度數位企劃", stage: "進行中", priority: "中", completion: 30, openItems: 3, needsSchedule: false, brief: "2026-05-13", nextDue: "2026-06-12", nextLabel: "UX 與客戶討論", launch: "2026-08-03", thisWeek: "UX 與客戶討論", risk: "—", url: "#", fromMilestoneTable: false, milestones: [] },
+    { code: "DEMO-03", icon: "🩺", client: "示範客戶 C", name: "公益社群短影音", stage: "未開始", priority: "中", completion: 0, openItems: 0, needsSchedule: true, brief: null, nextDue: null, nextLabel: null, launch: null, thisWeek: "等 brief", risk: "—", url: "#", fromMilestoneTable: false, milestones: [] },
   ],
   reminders: [
     { text: "回覆客戶提案版本", due: "2026-06-02", project: "DEMO-01", client: "示範客戶 A", priority: "高", type: "我方承諾" },
