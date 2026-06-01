@@ -306,6 +306,12 @@ export async function getPortfolio(): Promise<Portfolio> {
         if (e.nextDue) p.nextDue = e.nextDue;
         p.nextLabel = e.nextLabel;
         p.milestones = e.items;
+        // fallback：專案總表「預計上線」沒填時，用里程碑裡含「上線」的最晚一筆補上線日
+        // （items 已依日期升冪排序 → 末筆即最晚的「上線」里程碑）。
+        if (!p.launch) {
+          const ups = e.items.filter((m) => m.label.includes("上線") && m.date);
+          if (ups.length) p.launch = ups[ups.length - 1].date;
+        }
       });
     } catch (e) {
       console.error("里程碑總表讀取失敗，沿用原邏輯:", e);
